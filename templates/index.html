@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<!--suppress HtmlUnknownTarget -->
+<html lang="en">
+
+<head{% block prefix %}{% endblock %}>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <META content="IE=edge,chrome=1" http-equiv="X-UA-Compatible"/>
+    <META http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <META NAME="revisit-after" CONTENT="3 days">
+    <META NAME="copyright" CONTENT="Copyright &copy; 2013 Near Pefect LLC. All rights reserved.">
+    <meta charset="utf-8">
+    {% block meta %}
+    {% endblock %}
+
+    <link href="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/css/bootstrap-combined.no-icons.min.css" rel="stylesheet">
+    <link href="//netdna.bootstrapcdn.com/font-awesome/3.2.1/css/font-awesome.css" rel="stylesheet">
+    <link href="/static/css/app.css" rel="stylesheet">
+    <title>{% block title %} {% endblock %}</title>
+
+</head>
+
+<body style="padding-top: 40px">
+<div id="fb-root"></div>
+<div class="container" id="container">
+    <div class="navbar" id="nav">
+        <div class="navbar-inner">
+            <div class="container" style="position:relative">
+                <ul class="nav" id="navbar">
+                    <a class="brand" href="/"><img src="/static/images/logo-small.png" id="sitelogo" height="50"></a>
+                </ul>
+
+
+                <div class="dropdown pull-right" id="user_box" style="height:100%;display:inline-block">
+                    {% if user %}
+                        <div class="media" id="loggedin" style="display:inline-block;margin-top:12px">
+                            <a class="pull-left" href="#">
+                                <img class="media-object img-polaroid" src="{{ user.picture }}" style="max-height: 40px">
+                            </a>
+                            <div class="media-body pull-right" style="padding:15px 5px 5px 0;margin-left: 0">
+                                <a class="dropdown-toggle" data-toggle="dropdown" href="#" data-bypass>
+                                    <h4 class="media-heading">{{ user.first_name }}
+                                    <b class="caret"></b>
+                                    </h4>
+                                </a>
+                                <ul class="dropdown-menu" role="menu" aria-labelledby="dLabel">
+                                    <li><a href="/profile/{{ user.uid }}" id="profile" tabindex="-1">User Profile</a></li>
+                                    <li><a href="#" id="logout" tabindex="-1">Logout</a></li>
+                                </ul>
+                                </div>
+                            </div>
+                    {% else %}
+                        <div style="margin-top: 25%"><button class="btn" id="login">Login</button></div>
+                    {% endif %}
+                </div>
+
+
+            </div>
+        </div>
+    </div>
+
+    <div class="row-fluid">
+        <div class="span9" id="left">
+            <div id="main" style="width:100%;min-height:400px">
+            {% block body %}
+
+
+
+            {% endblock %}
+            </div>
+        </div>
+        <div class="span3" id="right">
+{#            <div id="coverage_frame">#}
+{#                <object id="map" width="200" height = "150" data="/style/img/Blank_US_Map.svg"></object>#}
+{##}
+{#            </div>#}
+                 <div id="intro_tour">
+                    {% block tour %}{% endblock %}
+                </div>
+                <hr style="margin:10px 0 10px;width:250px">
+
+                <form class="navbar-search pull-left" method = "get">
+                    <label>Search for a Trail.</label>
+                  <input type="text" class="search-query" id = "trail_search_box" data-provide="typeahead" autocomplete = "off" placeholder="Find a trail.">
+                </form>
+
+
+            <hr>
+            <br>
+            <div class="fb-activity" data-site="http://www.trail.io" data-app-id="124265567722564"
+                 data-action="trailio:go_on" data-width="250" data-height="300" data-header="true"
+                 data-recommendations="true"></div>
+        </div>
+    </div>
+
+    <div class="row-fluid">
+        <div class="navbar span10 offset1 footer">
+            <div class="navbar-inner">
+                <div class="container" style="position:relative;text-align:center">
+                    <span>
+                    <a class="copyright">© 2012 Trail.io. All Rights Reserved</a>  |
+                    <a href="/page/terms_of_service">Terms of Service</a>  |
+                    <a href="/page/privacy_policy">Privacy Policy</a>  |
+                    <a href="/feedback">Contact Us</a>
+
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+<div id="preload-01"></div>
+{#<script type="text/javascript">#}
+{#    var appid = {{ appid }}#}
+{#    var _gaq = _gaq || [];#}
+{#    _gaq.push(['_setAccount', 'UA-35535522-1']);#}
+{#    _gaq.push(['_trackPageview']);#}
+{##}
+{#    (function () {#}
+{#        var ga = document.createElement('script');#}
+{#        ga.type = 'text/javascript';#}
+{#        ga.async = true;#}
+{#        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';#}
+{#        var s = document.getElementsByTagName('script')[0];#}
+{#        s.parentNode.insertBefore(ga, s);#}
+{#    })();#}
+{#</script>#}
+
+<script data-main="/static/js/main" src="/static/js/libs/require/require.js"></script>
+<script>
+    define('config',function(){
+        return {
+        {% block script %}{% endblock %}
+        };
+    });
+</script>
+
+{#<script src = "http://maps.googleapis.com/maps/api/js?key=AIzaSyCn0mXVcSCWexEo-VAxdghkyCKVw8HKUOs&libraries=geometry,places&sensor=true">#}
+
+{#</script>#}
+
+</body>
+</html>​

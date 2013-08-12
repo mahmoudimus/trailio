@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:image="http://www.google.com/schemas/sitemap-image/1.1"
+        >
+    {% for val in vals %}
+        <url>
+
+            <loc>{{ val.loc }}</loc>
+            {% if val.image|length > 0 %}
+                <image:image>
+                    {% for image in val.image %}
+                        <image:loc>{{ image }}</image:loc>
+                    {% endfor %}
+                </image:image>
+            {% endif %}
+            <changefreq>{{ val.changefreq }}</changefreq>
+
+            <priority>{{ val.priority }}</priority>
+        </url>
+    {% endfor %}
+
+</urlset>

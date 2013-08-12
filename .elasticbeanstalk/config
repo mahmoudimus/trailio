@@ -1,0 +1,13 @@
+[global]
+ApplicationName=trailio2
+AwsCredentialFile=/Users/peterfrance/.elasticbeanstalk/aws_credential_file
+DevToolsEndpoint=git.elasticbeanstalk.us-east-1.amazonaws.com
+EnvironmentName=trailio2-env
+EnvironmentType=LoadBalanced
+InstanceProfileName=aws-elasticbeanstalk-ec2-role
+OptionSettingFile=/Users/peterfrance/Development/trailio2/.elasticbeanstalk/optionsettings.trailio2-env
+RdsEnabled=No
+Region=us-east-1
+ServiceEndpoint=https://elasticbeanstalk.us-east-1.amazonaws.com
+SolutionStack=64bit Amazon Linux running Python
+

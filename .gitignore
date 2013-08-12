@@ -1,0 +1,7 @@
+*.pyc
+venv/
+.DS_Store
+default_settings
+vols.txt
+static/temp/
+.idea/

@@ -1,0 +1,18 @@
+{% extends "route.html" %}
+
+{% block prefix %} prefix="og: http://ogp.me/ns# fb: http://ogp.me/ns/fb# trailio: http://ogp.me/ns/fb/trailio#"{% endblock %}
+
+{% block meta %}
+    <meta property="fb:app_id" content="{{appid}}" />
+    <meta property="og:type"   content="trailio:hike" />
+    <meta property="og:url"    content="{{url}}" />
+    <meta property="og:title"  content="{{title}}" />
+    {%  if image %}
+    <meta property="og:image"  content="{{image}}" />
+    {% endif %}
+    <meta property="og:description"  content="{{description}}" />
+    {% for item in coords %}
+    <meta property="trailio:route:latitude"  content="{{item[0]}}" />
+    <meta property="trailio:route:longitude" content="{{item[1]}}" />
+    {% endfor %}
+{% endblock %}

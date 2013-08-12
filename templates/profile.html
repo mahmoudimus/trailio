@@ -1,0 +1,52 @@
+{% extends "index.html" %}
+
+{% block meta %}
+    <meta name="description" content="Profile information and photos from {{ user.first_name }}." />
+
+{% endblock %}
+
+{%  block script %}
+{#    profile_id:{{ profile.id }},#}
+{#    profile_string :{{ profile_string }},#}
+{% endblock %}
+{% block title %}Trail.io -- {{ user.first_name }}{% endblock %}
+
+
+{% block body %}
+        <div class="media">
+            <a class="pull-left" href="#">
+                <img class="media-object img-polaroid" src="{{ user.picture}}"></a>
+            <div class="media-body" style="height:150px;overflow:auto"><a href="{{ user.profile_url}}" target="_blank"><p class="lead">
+                {{ user.first_name }}</p></a>
+
+                {% for item in routes %}
+                <div class="media"><a class="pull-left" href="#"><img class="media-object" src="{{ item.photo }}"></a>
+
+                    <div class="media-body"><a href="{{ item.path }}">
+                        <h5>{{ item.name }}</h5></a>
+{#                        <small>{{ item.date }}</small>#}
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        <hr>
+        <div id="user_contribs" class="masonry clearfix" style="width:100%">
+
+            {% for item in photos %}
+            <div class="{% if loop.length==1 %} col2 {% else %} col1 {% endif %}contrib masonry-brick" style="padding: 2%">
+                <h6>{{ item.name }}</h6>
+                <img src="{{ item.medium}}"class="img-polaroid">
+                <div>
+                <blockquote><p>{{ item.text }}</p>
+                    <small class="pull-right">{{ item.date }}</small>
+                </blockquote>
+                </div>
+            </div>
+
+            {% endfor %}
+
+        </div>
+
+{% endblock %}
+

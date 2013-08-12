@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Route Editor</title>
+    <link href="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.0/css/bootstrap-combined.min.css" rel="stylesheet">
+{#    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js"></script>#}
+{#    <script src="//cdnjs.cloudflare.com/ajax/libs/underscore.js/1.4.1/underscore-min.js"></script>#}
+{#    <script src="//cdnjs.cloudflare.com/ajax/libs/backbone.js/0.9.2/backbone-min.js"></script>#}
+    <script type="text/javascript" src="http://maps.googleapis.com/maps/api/js?libraries=geometry,places&sensor=false"></script>
+
+</head>
+<body>
+<div id="map_canvas" style="width:100%; height:500px"></div>
+<br>
+
+<span class="pull-right" style="width:300px;padding:10px"id="seg_id">
+</span>
+<div class="form-horizontal">
+    <div class="control-group">
+        <label class="control-label" for="trail_name">Query</label>
+        <div class="controls">
+            <input type="text" id="trail_name">
+            <button class="btn" id="query">Search</button>
+            <button class="btn" id="select_all">Select All</button>
+            <button class="btn" id="clear">Clear Selected</button>
+        </div>
+    </div>
+
+
+    <div class="control-group">
+        <label class="control-label" for="links">Edit Segment.</label>
+        <div class="controls">
+            <div class="btn-group">
+                <button class="btn" id="edit">Edit</button>
+                <button class="btn" id="submit_seg">Submit</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="control-group">
+        <label class="control-label" for="links">Links. Enter name, hyperlink separated by lines.</label>
+        <div class="controls">
+            <textarea id="links" rows="5"></textarea>
+        </div>
+    </div>
+
+    <div class="btn-group">
+        <button class="btn" id="connect">Connect Segs</button>
+        <button class="btn" id="delete">Delete Selected</button>
+        <button class="btn" id="submit">Submit Route</button>
+    </div>
+
+</div>
+
+<br>
+
+<script>
+
+{#    $(document).ready(function() {#}
+{#GET only#}
+{#        var SegModel = Backbone.Model.extend({#}
+{#            initialize: function(){#}
+{#                _.bindAll(this);#}
+{#                this.add_polyline()#}
+{#            },#}
+{#            add_polyline: function(){#}
+{#                var cp = new google.maps.LatLng(this.get('center')[0], this.get('center')[1]);#}
+{#                this.set('bounds', new google.maps.LatLngBounds(cp, cp));#}
+{#                this.set('polyarray', []);#}
+{#                _.each(this.get('coords'), function(point){#}
+{#                    var lat = point[0], lon = point[1];#}
+{##}
+{#                    var latlng = new google.maps.LatLng(lat, lon);#}
+{#                    bounds.extend(latlng);#}
+{#                    this.get('polyarray').push(latlng)#}
+{#                }, this);#}
+{#                var polyOptions = {#}
+{#                    strokeColor:'#FF0000',#}
+{#                    strokeOpacity:1.0,#}
+{#                    strokeWeight:3,#}
+{#                    editable: false#}
+{#                };#}
+{#                if (this.get('length') < 200){#}
+{#                    polyOptions.strokeColor = '#FFF'#}
+{#                }#}
+{#                this.set('poly', new google.maps.Polyline(polyOptions));#}
+{#                this.get('poly').setPath(this.get('polyarray'));#}
+{#                var that = this;#}
+{#            },#}
+{#            set_listener : function() {#}
+{#                var that = this;#}
+{#                var listener = google.maps.event.addListener(this.get('poly'), 'click', function(e){#}
+{#                    if (_.contains(selected.models, that)){#}
+{#                        selected.remove(that);#}
+{#                        that.get('poly').setOptions({strokeColor:'#FF0000'})#}
+{#                    } else {#}
+{#                        selected.add(that);#}
+{#                        that.get('poly').setOptions({strokeColor:'#004CFF'})#}
+{#                    }#}
+{#                });#}
+{#                this.set('listener', listener)#}
+{#            },#}
+{#            set_edit_listener : function() {#}
+{#                var that = this;#}
+{#                var listener = google.maps.event.addListener(this.get('poly'), 'click', function(e){#}
+{#                    var index = e.vertex;#}
+{#                    that.get('poly').getPath().removeAt(index)#}
+{#                });#}
+{#                this.set('edit_listener', listener)#}
+{#            },#}
+{#            remove_listener: function() {#}
+{#                google.maps.event.removeListener(this.get('listener'))#}
+{#            },#}
+{#            remove_edit_listener: function() {#}
+{#                google.maps.event.removeListener(this.get('edit_listener'))#}
+{#            }#}
+{#        });#}
+{#        var SegArray = Backbone.Collection.extend({model:SegModel, url:'/admin/_json/trailfinder'});#}
+{#   Utility #}
+{#        var Selected = Backbone.Collection.extend({#}
+{#            initialize: function() {#}
+{#                _.bindAll(this);#}
+{#             },#}
+{#            clear : function(){#}
+{#                this.each(function(model){#}
+{#                    model.get('poly').setOptions({strokeColor:'#FF0000'})#}
+{#                });#}
+{#                this.reset()#}
+{#            }#}
+{#        });#}
+{#        var seg_array = new SegArray;#}
+{#        var selected = new Selected;#}
+{#        var mapOptions = {#}
+{#            center: new google.maps.LatLng(36, -118),#}
+{#            mapTypeId:google.maps.MapTypeId.TERRAIN,#}
+{#            zoom:12#}
+{#        };#}
+{#        var map = new google.maps.Map($('#map_canvas')[0], mapOptions);#}
+{##}
+{##}
+{#        var $trail_name = $("#trail_name");#}
+{#        var $links = $('#links');#}
+{#        var $sid = $('span#seg_id');#}
+{##}
+{#        selected.on('all', function() {#}
+{#            $sid.html(selected.pluck('sid').join(' '))#}
+{#        });#}
+{#        seg_array.on('reset', function() {#}
+{#            var cp = new google.maps.LatLng(seg_array.at(0).get('center')[0], seg_array.at(0).get('center')[1]);#}
+{#            var bounds = new google.maps.LatLngBounds(cp, cp);#}
+{#            seg_array.each(function(model){#}
+{#                bounds.union(model.get('bounds'));#}
+{#                model.get('poly').setMap(map);#}
+{#                model.set_listener();#}
+{#            });#}
+{#            map.fitBounds(bounds)#}
+{#        });#}
+{##}
+{##}
+{##}
+{##}
+{##}
+{# Select All #}
+{##}
+{#        $("#clear").on("click", function() {#}
+{#            selected.clear()#}
+{#        });#}
+{#        $('#select_all').on('click', function(){#}
+{#            seg_array.each(function(model){#}
+{#                selected.add(model);#}
+{#                model.get('poly').setOptions({strokeColor:'#004CFF'})#}
+{#            })#}
+{#        });#}
+{#        $("#query").on('click', function() {#}
+{#            seg_array.fetch({#}
+{#                data: {#}
+{#                    'name': $trail_name.val()#}
+{#                },#}
+{#                reset: true#}
+{#            })#}
+{#        });#}
+{#        $("button#submit").on('click', function() {#}
+{#            $.ajax({#}
+{#                url: '/admin/_json/routeeditor',#}
+{#                type: 'POST',#}
+{#                data: {#}
+{#                    segs: selected.pluck('sid').join('+'),#}
+{#                    trail: $trail_name.val(),#}
+{#                    link: $("#links").val()#}
+{#                },#}
+{#                success: function() {#}
+{#                    selected.reset()#}
+{#                }#}
+{#            })#}
+{#        });#}
+{#        $('#edit').on('click', function() {#}
+{#            var seg = selected.at(0);#}
+{#            if (seg.get('poly').getEditable()){#}
+{#                seg.set_listener();#}
+{#                seg.remove_edit_listener();#}
+{#                seg.get('poly').setOptions({editable:false})#}
+{#            } else {#}
+{#                seg.remove_listener();#}
+{#                seg.set_edit_listener();#}
+{#                seg.get('poly').setOptions({editable:true})#}
+{#            }#}
+{#        });#}
+{#        $('#submit_seg').on('click', function() {#}
+{#            var seg = selected.at(0);#}
+{#            var coords = seg.get('poly').getPath().getArray();#}
+{#            coords = _.map(coords, function(point){#}
+{#                return point.toString()#}
+{#            });#}
+{#            var string = coords.join('|');#}
+{##}
+{#            $.ajax({#}
+{#                url: '/admin/_json/segedit',#}
+{#                type: 'POST',#}
+{#                data: {#}
+{#                    sid: seg.get('sid'),#}
+{#                    coords: string#}
+{#                }#}
+{##}
+{#            })#}
+{#        });#}
+{##}
+{#        $('button#delete').on('click', function(){#}
+{#            $.ajax({#}
+{#                url: '/admin/_json/delete',#}
+{#                type: 'POST',#}
+{#                data: {#}
+{#                    segs: selected.pluck('sid').join('+')#}
+{#                },#}
+{#                success: function() {#}
+{#                    selected.each(function(model){#}
+{#                        model.get('poly').setMap(null)#}
+{#                    });#}
+{#                    seg_array.remove(selected.models);#}
+{#                    selected.reset()#}
+{#                }#}
+{#            })#}
+{#        });#}
+{##}
+{#        $('button#connect').on('click', function(){#}
+{#            $.ajax({#}
+{#                url: '/admin/_json/connect',#}
+{#                type: 'POST',#}
+{#                data: {#}
+{#                    segs: selected.pluck('sid').join('+')#}
+{#                },#}
+{#                success: function(data, status, jqXHR) {#}
+{#                    remove the polylines from the map#}
+{#                    selected.each(function(model){#}
+{#                        model.get('poly').setMap(null)#}
+{#                    });#}
+{##}
+{#                    seg_array.remove(selected.models);#}
+{#                    var model = new SegModel(data);#}
+{#                    model.get('poly').setMap(map);#}
+{#                    model.set_listener();#}
+{#                    seg_array.add(model);#}
+{#                    selected.reset()#}
+{#                }#}
+{##}
+{#            })#}
+{#        });#}
+{#    })#}
+
+
+</script>
+<script data-main="../static/js/admin/route_editor" src="../static/js/libs/require/require.js"></script>
+
+</body>
+</html>
