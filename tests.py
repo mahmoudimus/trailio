@@ -42,13 +42,15 @@ class TestGeo(unittest2.TestCase):
         self.assertEqual(new_p2, p2)
         self.assertEqual(new_p3, p3)
 
-
-    def test_elevation_path(self):
+    def test_path(self):
+        self.assertEqual(len(self.path1.list), len(self.collection.get('features')[0].get('geometry').get('coordinates')))
+        self.assertEqual(len(self.path1.geo_json.get('coordinates')), len(self.collection.get('features')[0].get('geometry').get('coordinates')))
+    # def test_elevation_path(self):
         # el_path_1 = ElevationPath(self.path1)
         # elevations_1 = el_path_1.get_elevations()
         # self.assertEqual(len(elevations_1), el_path_1.samples)
 
-        el_path_2 = ElevationPath(self.path2)
-        elevations_2 = el_path_2.get_elevations()
-        self.assertEqual(len(elevations_2), el_path_2.samples)
+        # el_path_2 = ElevationPath(self.path2)
+        # elevations_2 = el_path_2.get_elevations()
+        # self.assertEqual(len(elevations_2), el_path_2.samples)
         # print self.el_path.get_elevations()

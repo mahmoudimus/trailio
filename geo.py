@@ -90,6 +90,7 @@ class Path(MutableSequence):
             self._list = self._list + other._list[::-1]
             return True
         return False
+
     # @property
     # def length(self):
     #     l = 0
