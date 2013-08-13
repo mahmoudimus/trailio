@@ -20,8 +20,7 @@ define([
                     });
                 }
                 , updater : function(item){
-                    console.log(item)
-                    window.location.href = window.location.origin + "/named_route/" + item;
+                    window.location.href = window.location.origin + "/named_route/" + item.split(' ').join('_');
                 }
             });
         }

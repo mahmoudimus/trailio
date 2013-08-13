@@ -52,12 +52,3 @@ class TestGeo(unittest2.TestCase):
         elevations_2 = el_path_2.get_elevations()
         self.assertEqual(len(elevations_2), el_path_2.samples)
         # print self.el_path.get_elevations()
-
-
-
-# suite = unittest.TestLoader().loadTestsFromTestCase(TestGeo)
-# unittest.TextTestRunner(verbosity=2).run(suite)
-
-# print __name__
-# # if __name__ == '__main__':
-# unittest.main()

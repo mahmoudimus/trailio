@@ -1,35 +1,3 @@
-//requirejs.config({
-////todo: make sure minified js are selected
-//    paths: {
-//        baseUrl: "/static/js",
-//        "jquery": "/static/js/libs/jquery/jquery-1.9.1"
-//        , "jqueryui": "static/js/libs/jquery/jquery-ui-1.10.2.custom.min"
-//        , "underscore": "/static/js/libs/underscore/underscore",
-//        "backbone": "/static/js/libs/backbone/backbone"
-//        , "async": "/static/js/libs/require/async",
-//        "bootstrap": "https://netdna.bootstrapcdn.com/twitter-bootstrap/2.3.0/js/bootstrap.min"
-//
-//    },
-//
-//    shim: {
-//        "underscore": {
-//            exports: "_"
-//        },
-//        "backbone": {
-//            "deps": ["underscore", "jquery"],
-//            "exports": "Backbone"
-//        },
-//
-//        "jqueryui": ["jquery"],
-//
-//        "bootstrap": {
-//            "deps": ["jquery"],
-//            "exports": "$.fn.popover"
-//        }
-//    }
-//});
-
-
 define([
     'globals',
     'jquery',
@@ -151,15 +119,15 @@ define([
                 }
             });
             Utils.SetLocation(bounds.getCenter());
-        },
+        }
 
-        close:function () {
+        , close:function () {
             this.tour.close();
             this.remove();
             this.unbind();
-        },
+        }
 
-        startnext: function() {
+        , startnext: function() {
             var that = this;
             var $list = this.$('#classic_list');
             $list.animate({
@@ -168,15 +136,6 @@ define([
             var spinner = new Spinner().spin($list[0]);
             var new_range = _.range((this.page*this.length), (this.page*this.length)+this.length);
 
-//            this.listenToOnce(this.frontlists, 'sync', function(){
-//                console.log('sync')
-//                $list.hide('slide', 500, function() {
-//                    if (that.frontlists.get('classic_trails').at(new_range[0])){
-//                        fill(1, spinner);
-//                    } else {
-//                    reload(spinner)}
-//                });
-//            });
             this.classic_routes.once('sync', function(){
                 $list.hide('slide', {}, 500, function() {
                     if (that.classic_routes.at(new_range[0])){
@@ -196,9 +155,9 @@ define([
                     that.fill(1, spinner)
                 });
             }
-        },
+        }
 
-        startprevious: function() {
+        , startprevious: function() {
             var that = this;
             var $list = this.$('#classic_list');
             $list.animate({
@@ -212,7 +171,5 @@ define([
         }
     });
 
-
-//    var front = new Front();
 });
 

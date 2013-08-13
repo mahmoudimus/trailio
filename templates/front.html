@@ -128,7 +128,7 @@ classic_routes : {{ classic_routes|tojson|safe }}
                     <ul id="recent_list" class="media-list">
                         {% for item in recent_photos %}
                             <li class="media">
-                                <a href="profile/" class="pull-left">
+                                <a href="profile/{{ item.user.uid }}" class="pull-left">
                                 <img class="img-polaroid media-object" src="{{ item.user.picture }}"> {{ item.user.first_name }} {{ item.user.last_name }}
                             </a>
 

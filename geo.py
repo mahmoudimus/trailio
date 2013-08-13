@@ -12,7 +12,6 @@ class Path(MutableSequence):
             geo, properties, fields = kwargs.get('geometry'), kwargs.get('properties'), kwargs.get('name_keys', [])
         else:
             geo, properties, fields = kwargs, None, None
-        # print geo
         if geo.get('type') == "MultiLineString":
             base_array = geo.get('coordinates').pop(0)
             base_path = Path(**{"type": "LineString", "coordinates" : base_array})
@@ -176,12 +175,6 @@ class Point(object):
                         math.cos(r_distance) - math.sin(lat1) * math.sin(lat2)
                         )
         return Point(math.degrees(lat2), math.degrees(lon2))
-
-
-# var lat2 = Math.asin( Math.sin(lat1)*Math.cos(d/R) +
-#               Math.cos(lat1)*Math.sin(d/R)*Math.cos(brng) );
-# var lon2 = lon1 + Math.atan2(Math.sin(brng)*Math.sin(d/R)*Math.cos(lat1),
-#                      Math.cos(d/R)-Math.sin(lat1)*Math.sin(lat2));
 
 
 class Box(object):

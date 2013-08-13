@@ -1,10 +1,11 @@
-*.pyc
 v/
+static/temp/
+static/elevations
+.idea/
+*.pyc
 .DS_Store
 default_settings
 vols.txt
-static/temp/
-.idea/
 .ebextensions
 .elasticbeanstalk
 local_settings.py

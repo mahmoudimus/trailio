@@ -221,7 +221,7 @@ class Photo(Document):
         return {
             'id' : str(self.id),
             'path' : self.route.path,
-            'date' : str(self.created),
+            'date' : self.created.strftime('%b. %d, %Y'),
             'location' : self.location,
             'text': self.text[:self.text.find(' ', 150)] + ' ...' if len(self.text) > 200 else self.text,
             'small' : url + self.s3_key + str(SIZES['small'][0]) + 'x' + str(SIZES['small'][1]),

@@ -4,7 +4,7 @@ define([
 
     return {
     route_map_div : "<div id = 'map_div'><div class='big_scale'><table class='scale-img'><tbody><tr><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr></tbody></table></div>" +
-                    "<div class='well map_well' id='map_well' ><div id='map_canvas' class='map_canvas' style='height:300px'></div><div class='btn-group map_buttons'><button class='btn' id='set_topo'>USGS Topo</button><button class='btn' id='reverse'>Reverse</button></div></div>" +
+                    "<div class='well map_well' id='map_well' ><div id='map_canvas' class='map_canvas' style='height:300px'></div><div class='btn-group map_buttons'><button class='btn' id='reverse'>Reverse</button></div></div>" +
                     "<div class='small_scale'><table class='scale-img'><tbody><tr><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr></tbody></table></div></div>",
 //    elevation_alert: _.template('<div style="position:absolute"class="alert alert-error"><button type="button" class="close" data-dismiss="alert">&times;</button>' +
 //        'Some of this route\'s elevation data appear to be missing.</div>'),
