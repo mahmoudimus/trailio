@@ -216,7 +216,7 @@ def anon_route_page(rid):
         user = User.objects(uid=session['uid']).get()
         ctx['user'] = user.json
     route = AnonRoute.objects(id = rid).first()
-    application.logger.debug(route.json)
+    # application.logger.debug(route.json)
     ctx.update(route.json)
     return render_template('route.html', **ctx)
 

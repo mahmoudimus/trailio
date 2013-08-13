@@ -95,8 +95,8 @@ class AnonRoute(Route):
         for seg in segs: regions.add(seg.region)
         route.regions = list(regions)
         path = make_ordered_path(list(segs))
+        current_app.logger.debug(path)
         current_app.logger.debug("make ordered path complete")
-
         e = ElevationPath(path)
         current_app.logger.debug("elevation path complete")
         route.elevations = e.get_elevations()

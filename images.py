@@ -11,19 +11,6 @@ ALLOWED_EXTENSIONS = ['txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif']
 TEMP_PATH = "static/temp/"
 SIZES = {'small': (75,75), 'medium' : (700,400)}
 
-# def upload_file():
-#     if request.method == 'POST':
-#         file = request.files['file']
-#         if file and allowed_file(file.filename):
-#             filename = secure_filename(file.filename)
-#             conn = S3Connection('credentials', '')
-#
-#
-#              = 'foobar'
-#             k.set_contents_from_string(file.readlines())
-#             return "Success!"
-
-
 
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS

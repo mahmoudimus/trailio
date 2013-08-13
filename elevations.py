@@ -2,9 +2,13 @@ import os
 import numpy as np
 import re
 from geo import *
-from flask import current_app
-# from models import *
 import math
+# from flask import current_app
+# from boto.s3.connection import S3Connection
+# from boto.s3.key import Key
+# import sys
+# import os
+# from flask import Flask
 
 METERS_PER_SAMPLE = 30.0
 
@@ -14,13 +18,11 @@ def find_intermediate_point(p1, p2, d):
 
 
 class ElevationPath(object):
-    DIR = 'static/elevations/'
     # SUFFIX = ''
     def __init__(self, path):
         self.path = path
         self.samples = round(len(path) / METERS_PER_SAMPLE)
         self.points = self.sample_points()
-        current_app.logger.debug("sample points complete")
 
         self.make_elevation_arrays()
 
@@ -76,8 +78,8 @@ class ElevationPath(object):
                 lonstr = ("W%d" % abs(lon)) if lon < 0 else ("E%d" % lon)
                 latstr = ("S%d" % abs(lat)) if lat < 0 else ("N%d" % lat)
                 st = latstr + lonstr + '.hgt'
-                self.arrays[(lat, lon)] = ElevationArray(os.path.join(self.DIR, st))
-        # print self.arrays
+                self.arrays[(lat, lon)] = ElevationArray(st)
+        print self.arrays
 
     def get_elevations(self):
         elevations = []
@@ -89,37 +91,25 @@ class ElevationPath(object):
 
 
 class ElevationArray(object):
+    DIR = 'static/elevations/'
+
     def __init__(self, filename):
         c = re.findall(r'[A-Z][0-9]+', filename)
-        # current_app.logger.debug(c)
         lat = float(c[0][1:]) * (-1 if c[0][0] == 'S' else 1)
         lng = float(c[1][1:]) * (-1 if c[1][0] == 'W' else 1)
         self.bounds = Box(north = lat + 1, east = lng + 1, south = lat, west = lng)
-        siz = os.path.getsize(filename)
+        path = os.path.join(self.DIR, filename)
+        siz = os.path.getsize(path)
         dim = int(math.sqrt(siz/2))
         assert dim*dim*2 == siz, 'Invalid file size'
-        self.data = np.fromfile(filename, np.dtype('>i2'), dim*dim).reshape((dim, dim))
+        self.data = np.fromfile(path, np.dtype('>i2'), dim*dim).reshape((dim, dim))
         np.place(self.data, self.data < 0, 0)
-        # self.data = self.data.clip(0, self.data.max())
         self.dimx = self.dimy = dim -1
-        # self.contours = set([])
-        # self.shape = np.ones(2)
 
     def index_2_point(self, i, j):
         lng = self.bounds.west + (float(j) / self.dimx)
         lat = self.bounds.south + (float(self.dimy - i) / self.dimy)
         return Point(lat, lng)
-
-    # def save(self):
-    #     it = np.nditer(self.data, flags=['multi_index'])
-    #     grid = []
-    #     while not it.finished:
-    #         grid.append(Elevations(elevation=it[0], point = self.index_2_point(*it.multi_index).geo_json))
-    #         it.iternext()
-    #         if len(grid) == 50:
-    #             Elevations.objects.insert(grid)
-    #             print "%s Elevation Documents Saved" % len(grid)
-    #             grid = []
 
     def elevate(self, x1, x2, x3, x0):
         x = np.array([x1,x2,x3])
@@ -145,16 +135,25 @@ class ElevationArray(object):
         if len(els) == 2: return sum(els) / 2
         elif len(els) == 1: return sum(els)
         elif len(els) == 0: return 0
-        # if len([])
-        # if any(p1[2], p2[2], p3[2])
         p0 = np.array([x_d, y_d])
         return self.elevate(p1, p2, p3, p0)
 
 
 
+
 # if __name__ == '__main__':
+#     app = Flask(__name__)
+#     app.config.from_object('settings')
 #     path = sys.argv[1]
-#     point = sys.argv[2].split(',')
-#     point = Point(float(point[0]), float(point[1]))
-#     e = ElevationArray(path)
-#     print e.elevation_val(point)
+#     name = path.split('/')[-1]
+#     conn = S3Connection(app.config.get('AWS_ACCESS_KEY'), app.config.get('AWS_SECRET_KEY'))
+#     bucket = conn.create_bucket(app.config.get('ELEVATIONS_BUCKET_NAME'))
+#     k = Key(bucket)
+#     k.key = name
+#     k.set_contents_from_filename(path)
+#
+    # path = sys.argv[1]
+    # point = sys.argv[2].split(',')
+    # point = Point(float(point[0]), float(point[1]))
+    # e = ElevationArray(path)
+    # print e.elevation_val(point)
