@@ -99,7 +99,7 @@ classic_routes : {{ classic_routes|tojson|safe }}
                                 </a>
 
                                 <div class="media-body">
-                                    <a href="{{ item.properties.link }}">
+                                    <a href="{{ item.properties.path }}">
                                         <h4 class="media-heading">{{ item.properties.name }}</h4>
                                     </a>
                                     {% for name in  item.properties.regions %}

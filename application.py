@@ -5,6 +5,7 @@ from models import *
 import sys
 from images import s3_save_image
 import os
+from geo import Box, Point
 
 application = Flask(__name__)
 application.config.from_object('settings')
@@ -104,8 +105,7 @@ def get_anon_route():
     # ctx = {'user' : None}
     sids = sorted(request.values['selected'].split('+'))
     route = AnonRoute.get_or_create_anon_route(sids)
-    application.logger.debug(route.path)
-    return redirect(route.path)
+    return jsonify({'path': route.path})
 
 
 @application.route('/api/named_route/', methods = ['GET'])

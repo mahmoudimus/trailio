@@ -97,8 +97,8 @@ define([
                 },
                 type : 'POST',
                 success : function(resp){
-                    console.log(resp.properties.link)
-                    location.href = resp.properties.link
+                    console.log(resp)
+                    location.href = resp.path
                 }
             });
         }

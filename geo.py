@@ -1,7 +1,7 @@
 __author__ = 'peterfrance'
 import math
 from collections import MutableSequence
-RADIUS = 6378135
+RADIUS = 6371000
 
 
 
@@ -12,6 +12,7 @@ class Path(MutableSequence):
             geo, properties, fields = kwargs.get('geometry'), kwargs.get('properties'), kwargs.get('name_keys', [])
         else:
             geo, properties, fields = kwargs, None, None
+        # print geo
         if geo.get('type') == "MultiLineString":
             base_array = geo.get('coordinates').pop(0)
             base_path = Path(**{"type": "LineString", "coordinates" : base_array})
@@ -34,10 +35,14 @@ class Path(MutableSequence):
     def __getitem__(self, item):
         return self.list[item]
 
+    def slice(self, i, j = None):
+        if not j: j = len(self.list)
+        return Path({'type' : 'LineString', 'coordinates': [[p.lon, p.lat] for p in self.list[i:j]]})
+
     def __len__(self):
         l = 0
         for i in range(1, len(self.list)):
-            l += self.list[i].distance(self.list[i-1])
+            l += self._list[i].distance(self.list[i-1])
         return l
 
     def __setitem__(self, key, value):
@@ -101,7 +106,7 @@ class Point(object):
     lat: A float in the range [-90,90] indicating the point's latitude.
     lon: A float in the range [-180,180] indicating the point's longitude.
     """
-
+    TOL = 0.0001
     def __init__(self, lat, lon):
         """Initializes a point with the given latitude and longitude."""
         if lat and lon:
@@ -114,9 +119,12 @@ class Point(object):
         self.lon = lon
 
     def __eq__(self, other):
-        return self.lat == other.lat and self.lon == other.lon
+        return abs(self.lat - other.lat) < self.TOL and abs(self.lon - other.lon) < self.TOL
 
     def __str__(self):
+        return '(%f, %f)' % (self.lat, self.lon)
+
+    def __repr__(self):
         return '(%f, %f)' % (self.lat, self.lon)
 
     def __nonzero__(self):
@@ -124,11 +132,20 @@ class Point(object):
         return False
 
     def distance(self, other):
-        selflat, selflon = math.radians(self.lon), math.radians(self.lat)
-        otherlat, otherlon = math.radians(other.lon), math.radians(other.lat)
-        sloc = (math.sin(selflat) * math.sin(otherlat) + math.cos(selflat) * math.cos(otherlat) * math.cos(otherlon - otherlon))
-        sloc = max(min(sloc, 1.0), -1.0)
+        selflat, selflon = math.radians(self.lat), math.radians(self.lon)
+        otherlat, otherlon = math.radians(other.lat), math.radians(other.lon)
+        sloc = ((math.sin(selflat) * math.sin(otherlat)) + (math.cos(selflat) * math.cos(otherlat) * math.cos(otherlon - selflon)))
         return RADIUS * math.acos(sloc)
+
+    def bearing(self, other):
+        lat1, lat2 = math.radians(self.lat), math.radians(other.lat)
+        lon1, lon2 = math.radians(self.lon), math.radians(other.lon)
+        dlon =  lon2 - lon1
+        y = math.sin(dlon) * math.cos(lat2)
+        x = math.cos(lat1) * math.sin(lat2) -\
+            math.sin(lat1) * math.cos(lat2) * math.cos(dlon)
+        return math.degrees(math.atan2(y, x)) % 360
+
 
     def node(self):
         return "%.3f, %.3f" % (self.lat, self.lon)
@@ -159,6 +176,13 @@ class Point(object):
                         math.cos(r_distance) - math.sin(lat1) * math.sin(lat2)
                         )
         return Point(math.degrees(lat2), math.degrees(lon2))
+
+
+# var lat2 = Math.asin( Math.sin(lat1)*Math.cos(d/R) +
+#               Math.cos(lat1)*Math.sin(d/R)*Math.cos(brng) );
+# var lon2 = lon1 + Math.atan2(Math.sin(brng)*Math.sin(d/R)*Math.cos(lat1),
+#                      Math.cos(d/R)-Math.sin(lat1)*Math.sin(lat2));
+
 
 class Box(object):
     """A two-dimensional rectangular region defined by NE and SW points.

@@ -1,6 +1,4 @@
 from mongoengine import *
-from geo import *
-import json
 from datetime import datetime
 from hashlib import md5
 from utils import make_ordered_path
@@ -99,13 +97,11 @@ class AnonRoute(Route):
         segs = Segment.objects(id__in=seg_ids)
         regions = set([])
         for seg in segs:
-            regions.add(seg)
+            regions.add(seg.region)
         route.regions = list(regions)
         path = make_ordered_path(list(segs))
-        current_app.logger.debug(path)
-        current_app.logger.debug("Before ElevationPath")
-        e = ElevationPath(path, int(len(path) / 20))
-        current_app.logger.debug("After")
+        e = ElevationPath(path)
+        # current_app.logger.debug("After")
         route.elevations = e.get_elevations()
         route.coordinates = path.geo_json
         route.distance = len(path)

@@ -2,81 +2,66 @@ import os
 import numpy as np
 import re
 from geo import *
-from models import *
+# from flask import current_app
+# from models import *
 import math
 
-# def get_intermediate_point(delta, current, point):
-#     tol = 10
-#     def line(lng):
-#         sl = (point.lat - current.lat) / (point.long - current.lon)
-#         b = current.lat - current.lon
-#         return sl * lng + b
-#
-#     def search(lon):
-#         new_p = Point(line(lon), lon)
-#         new_d = current.distance(new_p)
-#         if delta - tol < new_d < delta + tol:
-#             return new_p
-#         elif new_d > delta + tol:
-#
-#         elif new_d < delta + tol:
+METERS_PER_SAMPLE = 30.0
 
-
-
-    # def search():
-
-    # p1 = np.array([current.lat, current.lon])
-    # p2 = np.array([point.lat, point.lon])
-    # b = p2 - p1
-    # c = np.array([current.lat, point.lon]) - p1
-    # bearing = math.acos(np.dot(b, c) /(np.linalg.norm(b) * np.linalg.norm(c)))
-    # # current_app.logger.debug(bearing)
-    # # current_app.logger.debug(delta)
-    # return current.compute_offset(bearing, delta)
-
-# def something():
-#     delta = segsize - current_length
-#     # find an intermediate point, which will make the total length segsize
-#     p = get_intermediate_point(delta, current, point)
-#     points.append(p)
-#     current = p
-#     current_length = D - delta
+def find_intermediate_point(p1, p2, d):
+    theta = p1.bearing(p2)
+    return p1.compute_offset(theta, d)
 
 
 class ElevationPath(object):
     DIR = 'static/elevations/'
-    SUFFIX = ''
-    def __init__(self, path, samples):
+    # SUFFIX = ''
+    def __init__(self, path):
         self.path = path
-        self.samples = samples
+        self.samples = round(len(path) / METERS_PER_SAMPLE)
         self.points = self.sample_points()
         self.make_elevation_arrays()
-        # self.cells = {int(math.floor(p.lon)) for p in self.points}
-        # latrange = {int(math.floor(p.lat)) for p in self.points}
 
 
     def sample_points(self):
-        seg_size_deg = len(self.path) / self.samples
-        current = self.path[0]
-        current_length = 0
+        seg_size = METERS_PER_SAMPLE
+        current = None
+        current_sample_length = 0
         points = []
         for i, point in enumerate(self.path):
-            if i == 0: continue
+            # print "The raw distance remaining in this path is %s" % len(self.path.slice(i))
+            if i == 0:
+                current = point
+                continue
             # what is the distance from current to next
-            D = current.distance(point)
+            d_to_next_point = current.distance(point)
+            # print "The distance from the %sth point to the %sth point is %s" % (i-1, i, d_to_next_point)
+            # print "We currently have %s points" % len(points)
+            # print "We have already made a segment that is %s meters long" % current_sample_length
             # if, having gone to next, our total length is great than segsize
-            if current_length + D > segsize:
-
-                delta = segsize - current_length
+            if current_sample_length + d_to_next_point > seg_size:
+                delta = seg_size - current_sample_length
+                # print "Therefore, we will take a sample %s meters into this new segment" % delta
+                remainder = d_to_next_point - delta
                 # find an intermediate point, which will make the total length segsize
-                p = get_intermediate_point(delta, current, point)
+                p = find_intermediate_point(current, point, delta)
+                c_d = current.distance(p)
+                # print "To check, this point is %s meters from the start of the segment, for a total distance of %s" % (c_d, current_sample_length + c_d)
+
+                # if len(points) > 0:
+                #     check[str(p)] = points[-1].distance(p)
                 points.append(p)
+                while remainder > seg_size:
+                    # print "There are %s meters left in this segment (measured at %s), so we should take %s more points from it" % (remainder, p.distance(point), math.floor(remainder / METERS_PER_SAMPLE))
+                    new_p = find_intermediate_point(p, point, seg_size)
+                    # print "To check, this point is %s meters from the last point" % p.distance(new_p)
+                    points.append(new_p)
+                    remainder -= seg_size
+                    p = new_p
                 current = p
-                current_length = D - delta
-
-
+                current_sample_length = remainder
             else:
-                current_length += current.distance(point)
+                current_sample_length += d_to_next_point
                 current = point
         return points
 
@@ -90,6 +75,7 @@ class ElevationPath(object):
                 latstr = ("S%d" % abs(lat)) if lat < 0 else ("N%d" % lat)
                 st = latstr + lonstr + '.hgt'
                 self.arrays[(lat, lon)] = ElevationArray(os.path.join(self.DIR, st))
+        # print self.arrays
 
     def get_elevations(self):
         elevations = []
@@ -103,7 +89,7 @@ class ElevationPath(object):
 class ElevationArray(object):
     def __init__(self, filename):
         c = re.findall(r'[A-Z][0-9]+', filename)
-        current_app.logger.debug(c)
+        # current_app.logger.debug(c)
         lat = float(c[0][1:]) * (-1 if c[0][0] == 'S' else 1)
         lng = float(c[1][1:]) * (-1 if c[1][0] == 'W' else 1)
         self.bounds = Box(north = lat + 1, east = lng + 1, south = lat, west = lng)
@@ -153,6 +139,12 @@ class ElevationArray(object):
         p1 = np.array([x_maj, y_maj, self.data[y_maj, x_maj]])
         p2 = np.array([x_maj, y_min, self.data[y_min, x_maj]])
         p3 = np.array([x_min, y_maj, self.data[y_maj, x_min]])
+        els = [l for l in [p1[2], p2[2], p3[2]] if l != 0]
+        if len(els) == 2: return sum(els) / 2
+        elif len(els) == 1: return sum(els)
+        elif len(els) == 0: return 0
+        # if len([])
+        # if any(p1[2], p2[2], p3[2])
         p0 = np.array([x_d, y_d])
         return self.elevate(p1, p2, p3, p0)
 

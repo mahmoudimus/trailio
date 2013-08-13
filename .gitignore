@@ -1,5 +1,5 @@
 *.pyc
-venv/
+v/
 .DS_Store
 default_settings
 vols.txt
