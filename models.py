@@ -16,13 +16,9 @@ class Segment(Document):
     length = FloatField()
     region = StringField()
 
-
-
     @classmethod
     def bbox_query(cls, box):
         return cls.objects(coordinates__geo_intersects = box.geo_json())
-
-
 
 class Pages(Document):
     date = DateTimeField(default = datetime.now)
@@ -30,7 +26,6 @@ class Pages(Document):
     text = StringField()
 
 class Section(Document):
-
     coordinates = LineStringField()
     elevations = ListField(FloatField(), default = list)
     width = IntField()
@@ -95,13 +90,15 @@ class AnonRoute(Route):
         if not first_created:
             return route
         segs = Segment.objects(id__in=seg_ids)
+        current_app.logger.debug(segs)
         regions = set([])
-        for seg in segs:
-            regions.add(seg.region)
+        for seg in segs: regions.add(seg.region)
         route.regions = list(regions)
         path = make_ordered_path(list(segs))
+        current_app.logger.debug("make ordered path complete")
+
         e = ElevationPath(path)
-        # current_app.logger.debug("After")
+        current_app.logger.debug("elevation path complete")
         route.elevations = e.get_elevations()
         route.coordinates = path.geo_json
         route.distance = len(path)
@@ -213,7 +210,7 @@ class Photo(Document):
     @classmethod
     def recent_photos(cls, limit = 10):
         return cls.objects().order_by('-created')[:limit]
-        # current_app.logger.debug(p)
+
     @property
     def json(self):
         url = current_app.config.get('S3_BUCKET_LINK')

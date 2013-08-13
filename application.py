@@ -12,7 +12,6 @@ application.config.from_object('settings')
 if os.environ.get('TRAILIO_SETTINGS'):
     application.config.from_envvar('TRAILIO_SETTINGS')
 
-# app.config.from_envvar('LOCAL_TRAILIO_SETTINGS')
 db = MongoEngine(application)
 oauth = OAuth()
 application.secret_key = application.config.get('APP_SECRET')
@@ -50,7 +49,7 @@ def token_getter(token=None):
 
 @application.route('/login')
 def login():
-    application.logger.debug(url_for('oauth_authorized'))
+    # todo: clean up redirect
     return facebook.authorize(
         callback=url_for('oauth_authorized', redirect_url = '/', _external=True)
     )

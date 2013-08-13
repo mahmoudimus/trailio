@@ -2,7 +2,7 @@ import os
 import numpy as np
 import re
 from geo import *
-# from flask import current_app
+from flask import current_app
 # from models import *
 import math
 
@@ -20,6 +20,8 @@ class ElevationPath(object):
         self.path = path
         self.samples = round(len(path) / METERS_PER_SAMPLE)
         self.points = self.sample_points()
+        current_app.logger.debug("sample points complete")
+
         self.make_elevation_arrays()
 
 

@@ -10,3 +10,4 @@ vols.txt
 .elasticbeanstalk
 local_settings.py
 settings.py
+.elasticbeanstalk/
