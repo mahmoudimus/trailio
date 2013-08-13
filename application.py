@@ -101,7 +101,6 @@ def named_route_model(name):
 
 @application.route('/api/route/', methods = ['POST'])
 def get_anon_route():
-    # ctx = {'user' : None}
     sids = sorted(request.values['selected'].split('+'))
     route = AnonRoute.get_or_create_anon_route(sids)
     return jsonify({'path': route.path})
@@ -220,22 +219,6 @@ def anon_route_page(rid):
     application.logger.debug(route.json)
     ctx.update(route.json)
     return render_template('route.html', **ctx)
-
-    # if 'uid' in session:
-    #     user = User.objects(uid=session['uid']).get()
-    #     # ctx['user'] = user.json
-    # route = AnonRoute.objects(id=rid).get()
-    # ctx.update(route.json)
-
-    # return render_template('route.html', **ctx)
-
-# @application.route('/api/route/', methods = ['GET', 'POST'])
-# def anon_route_model():
-#     sids = sorted(request.values['selected'].split('+'))
-#     route = AnonRoute.get_or_create_anon_route(sids)
-#     return jsonify(route.json)
-
-
 
 @application.route('/profile/<uid>', methods = ['GET'])
 def get_profile(uid):

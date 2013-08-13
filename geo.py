@@ -1,7 +1,7 @@
 __author__ = 'peterfrance'
 import math
 from collections import MutableSequence
-RADIUS = 6371000
+RADIUS = 6378135
 
 
 
@@ -134,6 +134,7 @@ class Point(object):
         selflat, selflon = math.radians(self.lat), math.radians(self.lon)
         otherlat, otherlon = math.radians(other.lat), math.radians(other.lon)
         sloc = ((math.sin(selflat) * math.sin(otherlat)) + (math.cos(selflat) * math.cos(otherlat) * math.cos(otherlon - selflon)))
+        sloc = max(min(sloc, 1.0), -1.0)
         return RADIUS * math.acos(sloc)
 
     def bearing(self, other):
