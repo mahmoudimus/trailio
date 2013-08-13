@@ -5,3 +5,7 @@ default_settings
 vols.txt
 static/temp/
 .idea/
+.ebextensions
+.elasticbeanstalk
+local_settings.py
+settings.py
