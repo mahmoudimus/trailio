@@ -4,6 +4,12 @@ DEBUG = True
 MONGODB_SETTINGS = {
     'DB' : 'trailio'
 }
+# MONGODB_SETTINGS = {
+#     'DB' : 'trailio',
+#     'HOST': 'ec2-23-22-88-49.compute-1.amazonaws.com',
+#     'PORT': 27017
+# }
+
 FACEBOOK_APP_ID = '124265567722564'
 FACEBOOK_APP_SECRET = '49acc7371b926066d02ce4928a873ed7'
 APP_SECRET = '17f51e87711c9c16d86105174044e817'

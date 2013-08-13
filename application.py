@@ -90,7 +90,7 @@ def trail_names_query(name):
 def named_route_model(name):
     if request.method == 'POST':
         segids = request.form['segs'].split('+')
-        route = NamedRoute.create_named_route_document(segids,name)
+        route = NamedRoute.create_named_route_document(segids, name)
         if route:
             return jsonify(route.json)
     elif request.method == 'GET':

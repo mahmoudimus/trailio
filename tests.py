@@ -2,6 +2,7 @@ import unittest2
 import json
 from geo import Path, Point
 from elevations import ElevationPath, find_intermediate_point
+import requests
 
 class TestGeo(unittest2.TestCase):
     def setUp(self):
@@ -43,6 +44,11 @@ class TestGeo(unittest2.TestCase):
         self.assertEqual(new_p3, p3)
 
     def test_path(self):
+        validate_endpoint = 'http://geojsonlint.com/validate'
+        r1 = requests.post(validate_endpoint, data=json.dumps(self.path1.geo_json))
+        r2 = requests.post(validate_endpoint, data = json.dumps(self.path2.geo_json))
+        self.assertEqual(r1.json().get('status'), 'ok')
+        self.assertEqual(r2.json().get('status'), 'ok')
         self.assertEqual(len(self.path1.list), len(self.collection.get('features')[0].get('geometry').get('coordinates')))
         self.assertEqual(len(self.path1.geo_json.get('coordinates')), len(self.collection.get('features')[0].get('geometry').get('coordinates')))
     # def test_elevation_path(self):

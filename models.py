@@ -132,12 +132,13 @@ class NamedRoute(Route):
         m = md5()
         m.update(name)
         route_id = m.hexdigest()
+        current_app.logger.debug(segids)
         segs = Segment.objects(id__in=segids)
+        current_app.logger.debug(segs)
         regions = set([])
-        for seg in segs:
-            regions.add(seg)
+        for seg in segs: regions.add(seg.region)
         path = make_ordered_path(list(segs))
-        e = ElevationPath(path, int(len(path) / 20))
+        e = ElevationPath(path)
         elevations = e.get_elevations()
         if not path:
             return None

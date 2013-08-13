@@ -49,7 +49,14 @@
                                 </div>
                             </div>
                     {% else %}
-                        <div style="margin-top: 25%"><button class="btn" id="login">Login</button></div>
+{#                        <div class="form-actions">#}
+{#                          <button type="submit" class="btn btn-primary">Save changes</button>#}
+{#                          <button type="button" class="btn">Cancel</button>#}
+{#                        </div>#}
+                        <form action="/login" method = "get">
+                           <div style="margin-top: 25%"><button class="btn" id="login">Login</button></div>
+
+                        </form>
                     {% endif %}
                 </div>
 
