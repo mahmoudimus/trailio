@@ -21,9 +21,13 @@ def insert_collection(json_file, region, name_keys):
         if 'type' in j and j['type'] == 'FeatureCollection':
             feature_list = j['features']
             for feat in feature_list:
-                if feat and feat.get('geometry') and feat.get('properties').get(name_keys[0]) is None:
-                    path = Path(name_keys = name_keys, **feat)
-                    s = Segment(coordinates = path.geo_json, trail_names = path.names, length = len(path), region = region)
+                print "Has geometry? " + str(feat.get('geometry') is not None)
+                names = [feat.get('properties').get(key).capitalize() for key in name_keys if feat.get('properties').get(key)]
+                print names
+                if feat and feat.get('geometry'):
+                    path = Path(**feat)
+                    s = Segment(coordinates = path.geo_json, trail_names = names,
+                                length = len(path), region = region)
                     try:
                         s.save()
                         results.append(s)

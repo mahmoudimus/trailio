@@ -21,11 +21,11 @@ class Path(MutableSequence):
             self._list = base_path.list
         if geo.get('type') == "LineString":
             self._list = [Point(lat = p[1], lon=p[0]) for p in geo['coordinates']]
-        names = set([])
-        if fields:
-            for n in fields:
-                names.add(properties[n])
-        self.names = list(names) if None not in names else []
+        # names = set([])
+        # if fields:
+        #     for n in fields:
+        #         names.add(properties[n])
+        # self.names = list(names) if None not in names else []
         self.properties = properties
         self._step = 1
     def __delitem__(self, key):
