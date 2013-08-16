@@ -22,7 +22,7 @@ def insert_collection(json_file, region, name_keys):
             feature_list = j['features']
             for feat in feature_list:
                 print "Has geometry? " + str(feat.get('geometry') is not None)
-                names = [feat.get('properties').get(key).capitalize() for key in name_keys if feat.get('properties').get(key)]
+                names = [feat.get('properties').get(key).title() for key in name_keys if feat.get('properties').get(key)]
                 print names
                 if feat and feat.get('geometry'):
                     path = Path(**feat)

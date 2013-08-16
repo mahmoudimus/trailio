@@ -6,8 +6,7 @@ static/elevations
 .DS_Store
 default_settings
 vols.txt
-.ebextensions
-.elasticbeanstalk
+.ebextensions/
+.elasticbeanstalk/
 local_settings.py
 settings.py
-.elasticbeanstalk/
