@@ -120,21 +120,18 @@ def named_route_collection():
         'features' : [r.json for r in NamedRoute.get_classic_routes(limit = length, page= page)]
     })
 
-# @application.route('/api/route/', methods = ['GET', 'POST'])
-# def anon_route_model():
-#     sids = sorted(request.values['selected'].split('+'))
-#     route = AnonRoute.get_or_create_anon_route(sids)
-#     return jsonify(route.json)
 
 @application.route('/api/photo/', methods = ['GET', 'POST'])
 def image():
     error = {'result' : None}
     if request.method == 'POST':
         if 'uid' in session: #if user
+            application.logger.debug("UID detected")
             img = request.files.get('files[]')
             coords = request.values.get('coords').split(',')
             text = request.values.get('text')
             if coords and text:
+                application.logger.debug("coords and text detected")
                 key = s3_save_image(img)
                 path = request.values['path'].split('/')
                 if path[0] == 'named_route':
