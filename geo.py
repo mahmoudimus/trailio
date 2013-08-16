@@ -1,3 +1,5 @@
+from flask import current_app
+
 __author__ = 'peterfrance'
 import math
 from collections import MutableSequence
@@ -21,27 +23,30 @@ class Path(MutableSequence):
             self._list = base_path.list
         if geo.get('type') == "LineString":
             self._list = [Point(lat = p[1], lon=p[0]) for p in geo['coordinates']]
-        # names = set([])
-        # if fields:
-        #     for n in fields:
-        #         names.add(properties[n])
-        # self.names = list(names) if None not in names else []
+
         self.properties = properties
         self._step = 1
+
     def __delitem__(self, key):
         del self.list[key]
 
     def __getitem__(self, item):
         return self.list[item]
 
+    def __contains__(self, item):
+        for p in self:
+            if p == item:
+                return True
+        return False
+
     def slice(self, i, j = None):
         if not j: j = len(self.list)
-        return Path({'type' : 'LineString', 'coordinates': [[p.lon, p.lat] for p in self.list[i:j]]})
+        return Path(**{'type' : 'LineString', 'coordinates': [[p.lon, p.lat] for p in self._list[i:j]]})
 
     def __len__(self):
         l = 0
         for i in range(1, len(self.list)):
-            l += self._list[i].distance(self.list[i-1])
+            l += self._list[i].distance(self._list[i-1])
         return l
 
     def __setitem__(self, key, value):
@@ -68,7 +73,8 @@ class Path(MutableSequence):
     def insert(self, index, value):
         # todo: make sure value type is correct
         # if type(value)==
-        self.list.insert(index, value)
+        self._list.insert(index, value)
+
     @property
     def nodes(self):
         s = "%.3f, %.3f"
@@ -106,7 +112,7 @@ class Point(object):
     lat: A float in the range [-90,90] indicating the point's latitude.
     lon: A float in the range [-180,180] indicating the point's longitude.
     """
-    TOL = 0.0001
+    TOL = 0.00001
     def __init__(self, lat, lon):
         """Initializes a point with the given latitude and longitude."""
         if lat and lon:
@@ -265,3 +271,20 @@ class Box(object):
     def centroid(self):
         return Point((self.north+self.south)/2, (self.east+self.west)/2)
 
+
+def make_ordered_path(segment_list, debug=False, distance=None):
+    """
+    """
+    segments = segment_list[:]
+    base = Path(**segments.pop(0).coordinates)
+    max_loops = sum(range(len(segments) + 1))
+    i = 0
+    while segments and i < max_loops:
+        current = segments.pop(0)
+        c_path = Path(**current.coordinates)
+        if not base.extend(c_path):
+            segments.append(current)
+        i += 1
+    if segments:
+        current_app.logger.error("Path did not utilize all segments. %s remaining." % len(segments))
+    return base

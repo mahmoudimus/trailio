@@ -38,6 +38,7 @@ def insert_collection(json_file, region, name_keys):
 
 if __name__ == "__main__":
     app = Flask(__name__)
+    # app.config.from_object('local_settings')
     app.config.from_object('settings')
     db = MongoEngine(app)
     path = sys.argv[1]
