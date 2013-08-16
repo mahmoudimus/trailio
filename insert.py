@@ -5,11 +5,9 @@
 """
 from models import Segment
 from flask import Flask
-from elevations import ElevationPath
 from flask.ext.mongoengine import MongoEngine
 from mongoengine import errors
 import sys
-# from pymongo import MongoClient
 import json
 from geo import Path
 

@@ -86,8 +86,8 @@ class ElevationPath(object):
         for point in self.points:
             p = (int(math.floor(point.lat)), int(math.floor(point.lon)))
             el = self.arrays[p].elevation_val(point)
-            # try to clean up holes in the data
-            if el != 0 and len(elevations) > 0 and elevations[-1] - el < 100:
+            # does not add elevation if: el == 0 AND already a list AND delta > 100
+            if el != 0 or len(elevations) == 0 or elevations[-1] - el < 100:
                 elevations.append(el)
         return elevations
 

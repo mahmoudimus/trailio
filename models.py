@@ -90,18 +90,13 @@ class AnonRoute(Route):
         if not first_created:
             return route
         segs = Segment.objects(id__in=seg_ids)
-        current_app.logger.debug(segs)
         regions = set([])
         for seg in segs: regions.add(seg.region)
         route.regions = list(regions)
         path = make_ordered_path(list(segs))
-        current_app.logger.debug("json path")
-        current_app.logger.debug(len(path.geo_json.get('coordinates')))
-        # current_app.logger.debug(path.ge)
         e = ElevationPath(path)
         route.elevations = e.get_elevations()
         route.coordinates = path.geo_json
-        current_app.logger.debug(path.geo_json)
         route.distance = len(path)
         route.save()
         return route
@@ -109,15 +104,6 @@ class AnonRoute(Route):
     @property
     def name(self):
         return ','.join(self.regions[:-1]) + " and " + self.regions[-1] if len(self.regions) > 3 else " and ".join(self.regions)
-
-    # @property
-    # def json(self):
-    #     j = super(AnonRoute, self).json
-    #
-    #     j['properties'].update({
-    #         'link' : '/route/' + str(self.id),
-    #     })
-    #     return j
 
     @property
     def path(self):
@@ -132,9 +118,7 @@ class NamedRoute(Route):
         m = md5()
         m.update(name)
         route_id = m.hexdigest()
-        current_app.logger.debug(segids)
         segs = Segment.objects(id__in=segids)
-        current_app.logger.debug(segs)
         regions = set([])
         for seg in segs: regions.add(seg.region)
         path = make_ordered_path(list(segs))
