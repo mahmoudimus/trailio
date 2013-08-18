@@ -6,6 +6,7 @@ import sys
 from images import s3_save_image
 import os
 from geo import Box, Point
+from flask.ext.admin import Admin
 
 application = Flask(__name__)
 application.config.from_object('settings')
@@ -234,6 +235,7 @@ def front():
         'recent_photos' : [p.json for p in Photo.recent_photos()],
         'user' : None
     }
+    application.logger.debug(session)
     if 'uid' in session:
         user = User.objects(uid = int(session['uid'])).get()
         ctx['user'] = user.json
@@ -241,5 +243,8 @@ def front():
 
 if __name__ == '__main__':
     port = int(sys.argv[1])
-    application.run(debug=True, host="0.0.0.0", port=port)
     application.config.from_object('local_settings')
+    admin_view = Admin(application, 'Trailio Models')
+    admin_view.add_view(UserView(User))
+    # admin_view.add_view(NamedRouteView(NamedRoute))
+    application.run(debug=True, host="0.0.0.0", port=port)

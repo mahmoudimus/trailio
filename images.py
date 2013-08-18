@@ -18,7 +18,7 @@ def allowed_file(filename):
 
 
 def create_sized_image(bucket, base_key, ext, size=None):
-    current_app.logger.debug("Create sized image %s" % size)
+    current_app.logger.debug("Create sized image %s" % str(size))
     if size:
         keyname = base_key + str(size[0]) + 'x'+ str(size[1])
         path = TEMP_PATH + keyname

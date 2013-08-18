@@ -6,6 +6,8 @@ from flask import current_app
 from elevations import ElevationPath
 from images import SIZES
 from flask import session
+from flask.ext.admin import BaseView, expose
+from flask.ext.admin.contrib.mongoengine import ModelView
 
 DEFAULT_ROUTE_PHOTO = 'static/images/75x75.gif'
 
@@ -39,7 +41,7 @@ class Route(Document):
     info = StringField()
     distance = IntField()
     elevation_gain = DictField()
-    elevations = ListField(FloatField(), default = list)
+    elevations = ListField(IntField(), default = list)
     meta = {'allow_inheritance': True,
             'indexes' : ['-votesum']
             }
@@ -260,3 +262,18 @@ class Vote(Document):
         vote = cls.objects(key = key).first()
         if vote: return True
         else: return False
+
+class AdminView(BaseView):
+
+    @expose('/admin')
+    def index(self):
+        return self.render('admin/myindex.html')
+
+class UserView(ModelView):
+    column_filters = ['last_name', 'first_name']
+
+    column_searchable_list = ('last_name', 'first_name')
+
+# class NamedRouteView(ModelView):
+#     column_filters = ['name']
+#     column_searchable_list = ('name')
