@@ -141,7 +141,7 @@ def image():
                 if path[0] == 'named_route':
                     r = NamedRoute.objects(name = ' '.join(path[1].split('_'))).get()
                 else:
-                    r = AnonRoute.objects(key = path[1]).get()
+                    r = AnonRoute.objects(id = path[1]).get()
                 p = Point(float(coords[0]), float(coords[1]))
                 # user = User.objects(uid = session['uid'])
                 seg = Segment.objects(coordinates__near=p.geo_json).first()
