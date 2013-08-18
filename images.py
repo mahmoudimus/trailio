@@ -8,7 +8,7 @@ from PIL import Image
 import os
 
 ALLOWED_EXTENSIONS = ['txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif']
-TEMP_PATH = "static/temp/"
+# TEMP_PATH = current_app.config.get('UPLOAD_FOLDER')
 SIZES = {'small': (75,75), 'medium' : (700,400)}
 
 
@@ -21,12 +21,12 @@ def create_sized_image(bucket, base_key, ext, size=None):
     current_app.logger.debug("Create sized image %s" % str(size))
     if size:
         keyname = base_key + str(size[0]) + 'x'+ str(size[1])
-        path = TEMP_PATH + keyname
-        img = Image.open(TEMP_PATH + base_key)
+        path = current_app.config.get('UPLOAD_FOLDER') + keyname
+        img = Image.open(current_app.config.get('UPLOAD_FOLDER') + base_key)
         img.thumbnail(size, Image.ANTIALIAS)
         img.save(path, 'JPEG')
     else:
-        path = TEMP_PATH + base_key
+        path = current_app.config.get('UPLOAD_FOLDER') + base_key
         keyname = base_key
     mimetypes.init()
     k = Key(bucket)
@@ -47,7 +47,7 @@ def s3_save_image(image_object):
         bucket = conn.create_bucket(current_app.config.get('AWS_BUCKET_NAME'))
         current_app.logger.debug(os.getcwd())
 
-        image_object.save(TEMP_PATH + keyname)
+        image_object.save(current_app.config.get('UPLOAD_FOLDER') + keyname)
 
         base_path = create_sized_image(bucket, keyname, ext)
         for size in SIZES.values():
