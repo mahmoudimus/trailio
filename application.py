@@ -125,7 +125,9 @@ def named_route_collection():
 @application.route('/api/photo/', methods = ['GET', 'POST'])
 def image():
     error = {'result' : None}
+    application.logger.debug(request.method)
     if request.method == 'POST':
+        application.logger.debug(session)
         if 'uid' in session: #if user
             application.logger.debug("UID detected")
             img = request.files.get('files[]')
