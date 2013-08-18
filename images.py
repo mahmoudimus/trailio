@@ -19,6 +19,7 @@ def allowed_file(filename):
 
 def create_sized_image(bucket, base_key, ext, size=None):
     current_app.logger.debug("Create sized image %s" % str(size))
+    current_app.logger.debug(Image.__name__)
     if size:
         keyname = base_key + str(size[0]) + 'x'+ str(size[1])
         path = current_app.config.get('UPLOAD_FOLDER') + keyname
