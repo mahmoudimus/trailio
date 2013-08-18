@@ -46,7 +46,9 @@ def s3_save_image(image_object):
         conn = S3Connection(current_app.config.get('AWS_ACCESS_KEY'), current_app.config.get('AWS_SECRET_KEY'))
         bucket = conn.create_bucket(current_app.config.get('AWS_BUCKET_NAME'))
         current_app.logger.debug(os.getcwd())
+
         image_object.save(TEMP_PATH + keyname)
+
         base_path = create_sized_image(bucket, keyname, ext)
         for size in SIZES.values():
             path = create_sized_image(bucket, keyname, ext, size)
