@@ -126,6 +126,7 @@ def named_route_collection():
 def image():
     error = {'result' : None}
     application.logger.debug(request.method)
+    application.logger.debug(os.getcwd())
     if request.method == 'POST':
         application.logger.debug(session)
         if 'uid' in session: #if user
