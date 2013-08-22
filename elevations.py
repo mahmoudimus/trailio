@@ -3,14 +3,9 @@ import numpy as np
 import re
 from geo import *
 import math
-# from flask import current_app
-# from boto.s3.connection import S3Connection
-# from boto.s3.key import Key
-# import sys
-# import os
-# from flask import Flask
 
-METERS_PER_SAMPLE = 30.0
+# METERS_PER_SAMPLE = 30.0
+SAMPLES = 350
 
 def find_intermediate_point(p1, p2, d):
     theta = p1.bearing(p2)
@@ -21,14 +16,15 @@ class ElevationPath(object):
     # SUFFIX = ''
     def __init__(self, path):
         self.path = path
-        self.samples = round(len(path) / METERS_PER_SAMPLE)
+        # self.samples = round(len(path) / METERS_PER_SAMPLE)
         self.points = self.sample_points()
 
         self.make_elevation_arrays()
 
 
     def sample_points(self):
-        seg_size = METERS_PER_SAMPLE
+        seg_size = max(30, len(self.path) / SAMPLES)
+        current_app.logger.debug(seg_size)
         current = None
         current_sample_length = 0
         points = []
