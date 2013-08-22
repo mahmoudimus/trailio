@@ -249,12 +249,13 @@ def front():
         ctx['user'] = current_user.json
     return render_template('front.html', **ctx)
 
+login_manager.init_app(application)
+admin_view = Admin(application, 'Trailio Models')
+admin_view.add_view(UserView(User))
+admin_view.add_view(SegmentView(Segment))
+admin_view.add_view(NamedRouteView(NamedRoute))
+
 if __name__ == '__main__':
     port = int(sys.argv[1])
     application.config.from_object('local_settings')
-    login_manager.init_app(application)
-    admin_view = Admin(application, 'Trailio Models')
-    admin_view.add_view(UserView(User))
-    admin_view.add_view(SegmentView(Segment))
-    admin_view.add_view(NamedRouteView(NamedRoute))
     application.run(debug=True, host="0.0.0.0", port=port)
