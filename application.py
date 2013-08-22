@@ -1,5 +1,6 @@
 from flask import Flask, request, session, redirect, url_for, render_template, jsonify, abort
 from flask.ext.mongoengine import MongoEngine
+from flask.ext.login import LoginManager, login_user, login_required
 from flask_oauth import OAuth
 from models import *
 import sys
@@ -8,14 +9,19 @@ import os
 from geo import Box, Point
 from flask.ext.admin import Admin
 
+
 application = Flask(__name__)
+login_manager = LoginManager()
 application.config.from_object('settings')
 if os.environ.get('TRAILIO_SETTINGS'):
     application.config.from_envvar('TRAILIO_SETTINGS')
-
 db = MongoEngine(application)
 oauth = OAuth()
 application.secret_key = application.config.get('APP_SECRET')
+
+def load_user(uid):
+    return User.objects(uid=uid).get()
+
 facebook = oauth.remote_app('facebook',
     base_url='https://graph.facebook.com/',
     request_token_url = None,
@@ -59,16 +65,19 @@ def login():
 @facebook.authorized_handler
 def oauth_authorized(resp):
     next_url = request.args.get('redirect_url')
-    if resp is not None or 'uid' not in session:
-        application.logger.debug(resp)
+    if resp is not None:
+        # application.logger.debug(resp)
         session['facebook_token'] = (
             resp['access_token'],
             ''
         )
         user = facebook.get('https://graph.facebook.com/me', {'fields' : 'id,first_name,last_name,link,picture'}).data
-        session['uid'] = user.get('id')
-        User.objects.get_or_create(uid = user.get('id'), first_name = user.get('first_name'), last_name = user.get('last_name'),
+
+        # session['uid'] = user.get('id')
+
+        u = User.objects.get_or_create(uid = user.get('id'), first_name = user.get('first_name'), last_name = user.get('last_name'),
                     profile_url = user.get('link'), picture = user.get('picture')['data']['url'])
+        login_user(u)
     return redirect(next_url)
 
 
@@ -196,6 +205,7 @@ def user_route(routeid):
         else: abort(401)
 
 @application.route('/editor', methods = ['GET'])
+@login_required
 def route_editor():
     return render_template('editor.html')
 
@@ -203,9 +213,8 @@ def route_editor():
 @application.route('/named_route/<name>', methods = ['GET'])
 def named_route_page(name):
     ctx = {'user' : None}
-    if 'uid' in session:
-        user = User.objects(uid=session['uid']).get()
-        ctx['user'] = user.json
+    if current_user.is_authenticated():
+        ctx['user'] = current_user.json
     route = NamedRoute.objects(name=' '.join(name.split('_'))).first()
     ctx.update(route.json)
     return render_template('route.html', **ctx)
@@ -213,9 +222,8 @@ def named_route_page(name):
 @application.route('/route/<rid>', methods = ['GET'])
 def anon_route_page(rid):
     ctx = {'user' : None}
-    if 'uid' in session:
-        user = User.objects(uid=session['uid']).get()
-        ctx['user'] = user.json
+    if current_user.is_authenticated():
+        ctx['user'] = current_user.json
     route = AnonRoute.objects(id = rid).first()
     # application.logger.debug(route.json)
     ctx.update(route.json)
@@ -224,9 +232,8 @@ def anon_route_page(rid):
 @application.route('/profile/<uid>', methods = ['GET'])
 def get_profile(uid):
     ctx = {'user': None}
-    if 'uid' in session:
-        user = User.objects(uid = session['uid']).get()
-        ctx['user'] = user.json
+    if current_user.is_authenticated():
+        ctx['user'] = current_user.json
     profile = User.objects(uid = uid).get()
     ctx.update(profile.profile)
     return render_template('profile.html', **ctx)
@@ -238,16 +245,16 @@ def front():
         'recent_photos' : [p.json for p in Photo.recent_photos()],
         'user' : None
     }
-    application.logger.debug(session)
-    if 'uid' in session:
-        user = User.objects(uid = int(session['uid'])).get()
-        ctx['user'] = user.json
+    if current_user.is_authenticated():
+        ctx['user'] = current_user.json
     return render_template('front.html', **ctx)
 
 if __name__ == '__main__':
     port = int(sys.argv[1])
     application.config.from_object('local_settings')
+    login_manager.init_app(application)
     admin_view = Admin(application, 'Trailio Models')
     admin_view.add_view(UserView(User))
-    # admin_view.add_view(NamedRouteView(NamedRoute))
+    admin_view.add_view(SegmentView(Segment))
+    admin_view.add_view(NamedRouteView(NamedRoute))
     application.run(debug=True, host="0.0.0.0", port=port)

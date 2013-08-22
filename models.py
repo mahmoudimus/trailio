@@ -8,6 +8,7 @@ from images import SIZES
 from flask import session
 from flask.ext.admin import BaseView, expose
 from flask.ext.admin.contrib.mongoengine import ModelView
+from flask.ext.login import current_user
 
 DEFAULT_ROUTE_PHOTO = 'static/images/75x75.gif'
 
@@ -264,6 +265,8 @@ class Vote(Document):
         else: return False
 
 class AdminView(BaseView):
+    def is_accessible(self):
+            return current_user.is_authenticated()
 
     @expose('/admin')
     def index(self):
@@ -274,6 +277,8 @@ class UserView(ModelView):
 
     column_searchable_list = ('last_name', 'first_name')
 
-# class NamedRouteView(ModelView):
-#     column_filters = ['name']
-#     column_searchable_list = ('name')
+class SegmentView(ModelView):
+    column_filters = ['region']
+
+class NamedRouteView(ModelView):
+    column_filters = ['name']
