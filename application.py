@@ -74,9 +74,11 @@ def oauth_authorized(resp):
         user = facebook.get('https://graph.facebook.com/me', {'fields' : 'id,first_name,last_name,link,picture'}).data
 
         # session['uid'] = user.get('id')
-
-        u = User.objects.get_or_create(uid = user.get('id'), first_name = user.get('first_name'), last_name = user.get('last_name'),
-                    profile_url = user.get('link'), picture = user.get('picture')['data']['url'])
+        try:
+            u = User.objects(uid= user.get('id')).get()
+        except DoesNotExist:
+            u = User.objects.create(uid = user.get('id'), first_name = user.get('first_name'), last_name = user.get('last_name'),
+                    profile_url = user.get('link'), picture = user.get('picture')['data']['url']).update(upsert=True)
         login_user(u)
     return redirect(next_url)
 
