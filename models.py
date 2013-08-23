@@ -8,7 +8,7 @@ from images import SIZES
 from flask import session
 from flask.ext.admin import BaseView, expose
 from flask.ext.admin.contrib.mongoengine import ModelView
-from flask.ext.login import current_user
+# from flask.ext.login import current_user
 
 DEFAULT_ROUTE_PHOTO = 'static/images/75x75.gif'
 
@@ -164,6 +164,7 @@ class User(Document):
     last_name = StringField()
     profile_url = URLField()
     picture = URLField()
+    admin = BooleanField()
 
     @property
     def json(self):
@@ -182,6 +183,26 @@ class User(Document):
             'routes' : [r.digest for r in UserRoute.objects(user = self.uid)],
             'photos' : [p.json for p in Photo.objects(user = self.uid)]
         }
+
+    # @classmethod
+    # def get_or_create(cls, uid):
+    #     try:
+    #         u = cls.objects(uid= id).get()
+    #     except DoesNotExist:
+    #         u = cls.objects.create(uid = user.get('id'), first_name = user.get('first_name'), last_name = user.get('last_name'),
+    #                 profile_url = user.get('link'), picture = user.get('picture')['data']['url']).update(upsert=True)
+    #
+    #     return cls.objects(uid=uid).get()
+
+    @classmethod
+    def get_user(cls, session):
+        uid = session.get("uid")
+        if uid:
+            try:
+                return cls.objects(uid = uid).get()
+            except DoesNotExist:
+                pass
+        return None
 
 class Photo(Document):
     user = ReferenceField(User)
@@ -242,6 +263,7 @@ class UserRoute(Document):
             'user_id' : self.user.id
         }
 
+
 class Vote(Document):
     key = StringField(primary_key=True)
 
@@ -266,7 +288,9 @@ class Vote(Document):
 
 class AdminView(BaseView):
     def is_accessible(self):
-            return current_user.is_authenticated()
+        user = User.get_user(session)
+        if not user or not user.admin: return False
+        return True
 
     @expose('/admin')
     def index(self):

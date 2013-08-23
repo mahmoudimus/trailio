@@ -1,6 +1,6 @@
 from flask import Flask, request, session, redirect, url_for, render_template, jsonify, abort
 from flask.ext.mongoengine import MongoEngine
-from flask.ext.login import LoginManager, login_user, login_required
+# from flask.ext.login import LoginManager, login_user, login_required
 from flask_oauth import OAuth
 from models import *
 import sys
@@ -11,7 +11,7 @@ from flask.ext.admin import Admin
 
 
 application = Flask(__name__)
-login_manager = LoginManager()
+# login_manager = LoginManager()
 application.config.from_object('settings')
 if os.environ.get('TRAILIO_SETTINGS'):
     application.config.from_envvar('TRAILIO_SETTINGS')
@@ -19,8 +19,8 @@ db = MongoEngine(application)
 oauth = OAuth()
 application.secret_key = application.config.get('APP_SECRET')
 
-def load_user(uid):
-    return User.objects(uid=uid).get()
+# @login_manager.user_loader
+
 
 facebook = oauth.remote_app('facebook',
     base_url='https://graph.facebook.com/',
@@ -57,6 +57,8 @@ def token_getter(token=None):
 @application.route('/login')
 def login():
     # todo: clean up redirect
+    if User.get_user(session):
+        return redirect('/')
     return facebook.authorize(
         callback=url_for('oauth_authorized', redirect_url = '/', _external=True)
     )
@@ -66,20 +68,17 @@ def login():
 def oauth_authorized(resp):
     next_url = request.args.get('redirect_url')
     if resp is not None:
-        # application.logger.debug(resp)
         session['facebook_token'] = (
             resp['access_token'],
             ''
         )
         user = facebook.get('https://graph.facebook.com/me', {'fields' : 'id,first_name,last_name,link,picture'}).data
-
-        # session['uid'] = user.get('id')
+        session['uid'] = user.get('id')
         try:
-            u = User.objects(uid= user.get('id')).get()
+            User.objects(uid= user.get('id')).get()
         except DoesNotExist:
-            u = User.objects.create(uid = user.get('id'), first_name = user.get('first_name'), last_name = user.get('last_name'),
+            User.objects.create(uid = user.get('id'), first_name = user.get('first_name'), last_name = user.get('last_name'),
                     profile_url = user.get('link'), picture = user.get('picture')['data']['url']).update(upsert=True)
-        login_user(u)
     return redirect(next_url)
 
 
@@ -165,15 +164,6 @@ def image():
             error['result'] = "You must be logged in to post a photo."
     return jsonify(error)
 
-
-# def upload_file():
-#     if request.method == 'POST':
-#         file = request.files['file']
-#         if file and allowed_file(file.filename):
-#             upload_to_s3(file)  # or however it's done
-#             return ... #successful upload
-#     return ..
-
 @application.route('/api/vote/route/<rid>', methods = ['POST'])
 def vote_route(rid):
     if 'uid' in session:
@@ -206,17 +196,19 @@ def user_route(routeid):
             return jsonify({})
         else: abort(401)
 
+
 @application.route('/editor', methods = ['GET'])
-@login_required
 def route_editor():
+    user = User.get_user(session)
+    if not user or not user.admin: abort(401)
     return render_template('editor.html')
 
 
 @application.route('/named_route/<name>', methods = ['GET'])
 def named_route_page(name):
     ctx = {'user' : None}
-    if current_user.is_authenticated():
-        ctx['user'] = current_user.json
+    user = User.get_user(session)
+    if user: ctx['user'] = user.json
     route = NamedRoute.objects(name=' '.join(name.split('_'))).first()
     ctx.update(route.json)
     return render_template('route.html', **ctx)
@@ -224,18 +216,17 @@ def named_route_page(name):
 @application.route('/route/<rid>', methods = ['GET'])
 def anon_route_page(rid):
     ctx = {'user' : None}
-    if current_user.is_authenticated():
-        ctx['user'] = current_user.json
+    user = User.get_user(session)
+    if user: ctx['user'] = user.json
     route = AnonRoute.objects(id = rid).first()
-    # application.logger.debug(route.json)
     ctx.update(route.json)
     return render_template('route.html', **ctx)
 
 @application.route('/profile/<uid>', methods = ['GET'])
 def get_profile(uid):
     ctx = {'user': None}
-    if current_user.is_authenticated():
-        ctx['user'] = current_user.json
+    user = User.get_user(session)
+    if user: ctx['user'] = user.json
     profile = User.objects(uid = uid).get()
     ctx.update(profile.profile)
     return render_template('profile.html', **ctx)
@@ -247,11 +238,11 @@ def front():
         'recent_photos' : [p.json for p in Photo.recent_photos()],
         'user' : None
     }
-    if current_user.is_authenticated():
-        ctx['user'] = current_user.json
+    user = User.get_user(session)
+    if user: ctx['user'] = user.json
     return render_template('front.html', **ctx)
 
-login_manager.init_app(application)
+# login_manager.init_app(application)
 admin_view = Admin(application, 'Trailio Models')
 admin_view.add_view(UserView(User))
 admin_view.add_view(SegmentView(Segment))
