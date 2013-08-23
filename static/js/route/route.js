@@ -145,12 +145,11 @@ define([
             view.init_upload();
         }
 
-
-
         , save_route: function() {
             var selector = this.$('#save_route');
+            var that = this;
             $.ajax({
-                url: '/api/vote/route/' + this.model.get('properties').id,
+                url: '/api/vote/route/' + that.model.get('properties').id,
                 type: 'post',
                 complete: function (xhr, status) {
                     var data = xhr.responseText;
@@ -165,14 +164,10 @@ define([
 
 
         vote: function(e){
-            console.log(e)
             var ind = this.$('.carousel-inner').find(".active").index();
-            console.log(ind)
             var photo = this.photos.at(ind);
-            console.log(photo)
+            var that = this;
             var $tar = $(e.currentTarget);
-//            console.log($tar)
-//            var that = this;
             $.ajax({
                 url: '/api/vote/photo/' + photo.get('id').toString(),
                 type: 'post',

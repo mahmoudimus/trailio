@@ -1,5 +1,6 @@
 __author__ = 'peterfrance'
 
+from optparse import OptionParser
 from models import Segment
 from flask import Flask
 from flask.ext.mongoengine import MongoEngine
@@ -34,7 +35,10 @@ def break_segment(oid):
 
 if __name__ == "__main__":
     app = Flask(__name__)
-    # app.config.from_object('local_settings')
+    parser = OptionParser()
+    # parser.add_option("-f", "--file", dest="filename",
+    #               help="Path to geodata file.", metavar="FILE")
+
     app.config.from_object('settings')
     db = MongoEngine(app)
     oid = sys.argv[1]

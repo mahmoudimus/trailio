@@ -66,7 +66,6 @@ define([
             });
 
             $fileupload.on('fileuploaddone', function(e, data){
-                console.log(data)
                 that.collection.add(data.result, {remove:false});
             });
         }
