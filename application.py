@@ -1,6 +1,5 @@
 from flask import Flask, request, session, redirect, url_for, render_template, jsonify, abort
 from flask.ext.mongoengine import MongoEngine
-# from flask.ext.login import LoginManager, login_user, login_required
 from flask_oauth import OAuth
 from models import *
 import sys
@@ -30,6 +29,11 @@ facebook = oauth.remote_app('facebook',
 
 def segment_collection_response(obj_list):
 
+    """
+
+    :param obj_list:
+    :return:
+    """
     return jsonify({
         'type' : 'FeatureCollection',
         'features' : [{
@@ -48,11 +52,19 @@ def segment_collection_response(obj_list):
 
 @facebook.tokengetter
 def token_getter(token=None):
+    """
+
+    :param token:
+    :return:
+    """
     return session.get('facebook_token')
 
 @application.route('/login')
 def login():
     # todo: clean up redirect
+    """
+    :return:
+    """
     if User.get_user(session):
         return redirect('/')
     return facebook.authorize(
@@ -62,6 +74,11 @@ def login():
 @application.route('/oauth-authorized')
 @facebook.authorized_handler
 def oauth_authorized(resp):
+    """
+
+    :param resp:
+    :return:
+    """
     next_url = request.args.get('redirect_url')
     if resp is not None:
         session['facebook_token'] = (
@@ -81,6 +98,10 @@ def oauth_authorized(resp):
 
 @application.route('/api/segments/bounds', methods=['GET'])
 def bbox_query():
+    """
+
+    :return:
+    """
     box = Box(west =float(request.args.get('west')),
                 south = float(request.args.get('south')),
                 east = float(request.args.get('east')),
@@ -90,11 +111,21 @@ def bbox_query():
 
 @application.route('/api/segments/trail_name/<name>', methods = ["GET"])
 def trail_names_query(name):
+    """
+
+    :param name:
+    :return:
+    """
     results = Segment.objects(trail_names=' '.join(name.split('_')))
     return segment_collection_response(results)
 
 @application.route('/api/named_route/<name>', methods = ['GET', 'POST'])
 def named_route_model(name):
+    """
+
+    :param name:
+    :return:
+    """
     if request.method == 'POST':
         segids = request.form['segs'].split('+')
         route = NamedRoute.create_named_route_document(segids, name)
@@ -108,6 +139,11 @@ def named_route_model(name):
 
 @application.route('/api/route/', methods = ['POST'])
 def get_anon_route():
+    """
+
+
+    :return:
+    """
     sids = sorted(request.values['selected'].split('+'))
     route = AnonRoute.get_or_create_anon_route(sids)
     return jsonify({'path': route.path})
@@ -115,6 +151,11 @@ def get_anon_route():
 
 @application.route('/api/named_route/', methods = ['GET'])
 def named_route_collection():
+    """
+
+
+    :return:
+    """
     search = request.args.get('search')
     if search is not None:
         return jsonify({
@@ -130,6 +171,11 @@ def named_route_collection():
 
 @application.route('/api/photo/', methods = ['GET', 'POST'])
 def image():
+    """
+
+
+    :return:
+    """
     error = {'result' : None}
     application.logger.debug(request.method)
     application.logger.debug(os.getcwd())
@@ -162,6 +208,11 @@ def image():
 
 @application.route('/api/vote/route/<rid>', methods = ['POST'])
 def vote_route(rid):
+    """
+
+    :param rid:
+    :return:
+    """
     if 'uid' in session:
         uid = session['uid']
         v = Vote.get_or_set_vote(uid, rid)
@@ -173,6 +224,11 @@ def vote_route(rid):
 
 @application.route('/api/vote/photo/<pid>', methods = ['POST'])
 def vote_photo(pid):
+    """
+
+    :param pid:
+    :return:
+    """
     if 'uid' in session:
         v = Vote.get_or_set_vote(session['uid'], pid)
         if v:
@@ -183,6 +239,11 @@ def vote_photo(pid):
 
 @application.route('/api/user/<routeid>', methods = ['POST', 'GET'])
 def user_route(routeid):
+    """
+
+    :param routeid:
+    :return:
+    """
     if request.method == 'POST':
         if 'uid' in session:
             r = Route.objects(id = routeid)
@@ -195,6 +256,11 @@ def user_route(routeid):
 
 @application.route('/editor', methods = ['GET'])
 def route_editor():
+    """
+
+
+    :return:
+    """
     user = User.get_user(session)
     if not user or not user.admin: abort(401)
     return render_template('editor.html')
@@ -202,6 +268,11 @@ def route_editor():
 
 @application.route('/named_route/<name>', methods = ['GET'])
 def named_route_page(name):
+    """
+
+    :param name:
+    :return:
+    """
     ctx = {'user' : None}
     user = User.get_user(session)
     if user: ctx['user'] = user.json
@@ -211,6 +282,11 @@ def named_route_page(name):
 
 @application.route('/route/<rid>', methods = ['GET'])
 def anon_route_page(rid):
+    """
+
+    :param rid:
+    :return:
+    """
     ctx = {'user' : None}
     user = User.get_user(session)
     if user: ctx['user'] = user.json
@@ -220,6 +296,11 @@ def anon_route_page(rid):
 
 @application.route('/profile/<uid>', methods = ['GET'])
 def get_profile(uid):
+    """
+
+    :param uid:
+    :return:
+    """
     ctx = {'user': None}
     user = User.get_user(session)
     if user: ctx['user'] = user.json
@@ -229,6 +310,11 @@ def get_profile(uid):
 
 @application.route('/', methods=['GET'])
 def front():
+    """
+
+
+    :return:
+    """
     ctx = {
         'classic_routes' : [r.json for r in NamedRoute.get_classic_routes()],
         'recent_photos' : [p.json for p in Photo.recent_photos()],
@@ -239,12 +325,18 @@ def front():
     return render_template('front.html', **ctx)
 
 class AdminView(ModelView):
+    """
+        Base view for the admin views. Defines the authentication function for subclasses.
+    """
     def is_accessible(self):
         user = User.get_user(session)
         if user.admin: return True
         return False
 
 class UserView(AdminView):
+    """
+        User Admin View.
+    """
     column_filters = ['last_name', 'first_name']
     column_searchable_list = ('last_name', 'first_name')
 

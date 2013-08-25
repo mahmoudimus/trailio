@@ -6,8 +6,6 @@
 {% endblock %}
 
 {%  block script %}
-{#    profile_id:{{ profile.id }},#}
-{#    profile_string :{{ profile_string }},#}
 {% endblock %}
 {% block title %}Trail.io -- {{ user.first_name }}{% endblock %}
 
@@ -24,7 +22,6 @@
 
                     <div class="media-body"><a href="{{ item.path }}">
                         <h5>{{ item.name }}</h5></a>
-{#                        <small>{{ item.date }}</small>#}
                     </div>
                 </div>
                 {% endfor %}
@@ -49,4 +46,3 @@
         </div>
 
 {% endblock %}
-
