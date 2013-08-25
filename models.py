@@ -6,8 +6,7 @@ from flask import current_app
 from elevations import ElevationPath
 from images import SIZES
 from flask import session
-from flask.ext.admin import BaseView, expose
-from flask.ext.admin.contrib.mongoengine import ModelView
+
 # from flask.ext.login import current_user
 
 DEFAULT_ROUTE_PHOTO = 'static/images/75x75.gif'
@@ -202,7 +201,7 @@ class User(Document):
                 return cls.objects(uid = uid).get()
             except DoesNotExist:
                 pass
-        return None
+        return cls(admin = False)
 
 class Photo(Document):
     user = ReferenceField(User)
@@ -285,24 +284,3 @@ class Vote(Document):
         vote = cls.objects(key = key).first()
         if vote: return True
         else: return False
-
-class AdminView(BaseView):
-    def is_accessible(self):
-        user = User.get_user(session)
-        if not user or not user.admin: return False
-        return True
-
-    @expose('/admin')
-    def index(self):
-        return self.render('admin/myindex.html')
-
-class UserView(ModelView):
-    column_filters = ['last_name', 'first_name']
-
-    column_searchable_list = ('last_name', 'first_name')
-
-class SegmentView(ModelView):
-    column_filters = ['region']
-
-class NamedRouteView(ModelView):
-    column_filters = ['name']

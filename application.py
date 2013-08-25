@@ -8,7 +8,8 @@ from images import s3_save_image
 import os
 from geo import Box, Point
 from flask.ext.admin import Admin
-
+# from flask.ext.admin import BaseView, expose
+from flask.ext.admin.contrib.mongoengine import ModelView
 
 application = Flask(__name__)
 # login_manager = LoginManager()
@@ -242,7 +243,29 @@ def front():
     if user: ctx['user'] = user.json
     return render_template('front.html', **ctx)
 
-# login_manager.init_app(application)
+class AdminView(ModelView):
+    def is_accessible(self):
+        # print "ACC"
+        user = User.get_user(session)
+        # print user.__dict__
+        if user.admin: return True
+        return False
+    #
+    # @expose('/admin')
+    # def index(self):
+    #     return self.render('admin/myindex.html')
+
+class UserView(AdminView):
+    column_filters = ['last_name', 'first_name']
+
+    column_searchable_list = ('last_name', 'first_name')
+
+class SegmentView(AdminView):
+    column_filters = ['region']
+
+class NamedRouteView(AdminView):
+    column_filters = ['name']
+
 admin_view = Admin(application, 'Trailio Models')
 admin_view.add_view(UserView(User))
 admin_view.add_view(SegmentView(Segment))
