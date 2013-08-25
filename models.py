@@ -7,9 +7,7 @@ from elevations import ElevationPath
 from images import SIZES
 from flask import session
 
-# from flask.ext.login import current_user
-
-DEFAULT_ROUTE_PHOTO = 'static/images/75x75.gif'
+DEFAULT_ROUTE_PHOTO = 'static/images/trail-img.png'
 
 class Segment(Document):
     trail_names = ListField(StringField(), default=list)
@@ -182,16 +180,6 @@ class User(Document):
             'routes' : [r.digest for r in UserRoute.objects(user = self.uid)],
             'photos' : [p.json for p in Photo.objects(user = self.uid)]
         }
-
-    # @classmethod
-    # def get_or_create(cls, uid):
-    #     try:
-    #         u = cls.objects(uid= id).get()
-    #     except DoesNotExist:
-    #         u = cls.objects.create(uid = user.get('id'), first_name = user.get('first_name'), last_name = user.get('last_name'),
-    #                 profile_url = user.get('link'), picture = user.get('picture')['data']['url']).update(upsert=True)
-    #
-    #     return cls.objects(uid=uid).get()
 
     @classmethod
     def get_user(cls, session):

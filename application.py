@@ -8,20 +8,15 @@ from images import s3_save_image
 import os
 from geo import Box, Point
 from flask.ext.admin import Admin
-# from flask.ext.admin import BaseView, expose
 from flask.ext.admin.contrib.mongoengine import ModelView
 
 application = Flask(__name__)
-# login_manager = LoginManager()
 application.config.from_object('settings')
 if os.environ.get('TRAILIO_SETTINGS'):
     application.config.from_envvar('TRAILIO_SETTINGS')
 db = MongoEngine(application)
 oauth = OAuth()
 application.secret_key = application.config.get('APP_SECRET')
-
-# @login_manager.user_loader
-
 
 facebook = oauth.remote_app('facebook',
     base_url='https://graph.facebook.com/',
@@ -245,19 +240,12 @@ def front():
 
 class AdminView(ModelView):
     def is_accessible(self):
-        # print "ACC"
         user = User.get_user(session)
-        # print user.__dict__
         if user.admin: return True
         return False
-    #
-    # @expose('/admin')
-    # def index(self):
-    #     return self.render('admin/myindex.html')
 
 class UserView(AdminView):
     column_filters = ['last_name', 'first_name']
-
     column_searchable_list = ('last_name', 'first_name')
 
 class SegmentView(AdminView):
