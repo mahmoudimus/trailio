@@ -6,7 +6,7 @@
 {% endblock %}
 
 {% block script %}
-classic_routes : {{ classic_routes|tojson|safe }}
+    classic_routes : {{ classic_routes|tojson|safe }}
 {% endblock %}
 {% block tour %}
     <hr style="margin:10px 0 10px;width:250px">
@@ -18,114 +18,123 @@ classic_routes : {{ classic_routes|tojson|safe }}
 
 {% block title %}Trail.io -- Find Your Own Path{% endblock %}
 {% block body %}
-        <div id = "map_div">
-            <div class="big_scale">
-                <table class="scale-img">
-                    <tbody>
-                    <tr>
-                        {% for num in range(8) %}
-                            <td></td>
-                        {% endfor %}
-                    </tr>
-                    </tbody>
-                </table>
-            </div>
-            <div class="well map_well" id="map_well" data-intro='To find your own path, you can search the map.' data-step='1'>
-                <div id="map_canvas" class="map_canvas" style="height:400px" data-intro="Select the trail segments you want, making sure they are contiguous." data-step="4">
-                </div>
-                <input type="text" class="search-query navbar-search" id = "region_search_box" placeholder="Search by region." style="bottom:35px">
-                <div class="btn-group map_buttons">
-                    <button class="btn disabled" id="show-trail" data-intro="Then display your route." data-step="5" data-position="left">Display Route</button>
-                    <button class="btn" id="ref-map" data-loading-text="Loading..." data-intro="...then load the trails." data-step="3" data-position="right">Load Trails</button>
-                </div>
-            </div>
-            <div class="small_scale">
-                <table class="scale-img">
-                    <tbody>
-                    <tr>
-                        {% for num in range(8) %}
-                            <td></td>
-                        {% endfor %}
-                    </tr>
-                    </tbody>
-                </table>
-            </div>
-
+    <div id="map_div">
+        <div class="big_scale">
+            <table class="scale-img">
+                <tbody>
+                <tr>
+                    {% for num in range(8) %}
+                        <td></td>
+                    {% endfor %}
+                </tr>
+                </tbody>
+            </table>
         </div>
-            <div id="lists" class="row-fluid">
+        <div class="well map-well" id="map_well" data-intro='To find your own path, you can search the map.'
+             data-step='1'>
+            <div id="map_canvas" class="map-canvas" data-intro="Select the trail segments you want, making sure they are contiguous." data-step="4">
+            </div>
+            <input type="search" class="region-search input-lg" id="region_search_box" placeholder="Search by region.">
 
-                <div id="classic_list_box" class="pull-left span6">
-                    <div class="row-fluid" style="margin-top:10px">
-                        <div class="navbar">
-                            <div class="navbar-inner">
-                                <div class="container" style="position:relative">
-                                <h1 class="letterpress">Classic Routes</h1>
-                            </div>
-                        </div>
-                        </div>
+            <div class="btn-group map-buttons">
+                <button class="btn disabled" id="show-trail" data-intro="Then display your route." data-step="5"
+                        data-position="left">Display Route
+                </button>
+                <button class="btn" id="ref-map" data-loading-text="Loading..." data-intro="...then load the trails."
+                        data-step="3" data-position="right">Load Trails
+                </button>
+            </div>
+        </div>
+        <div class="small_scale">
+            <table class="scale-img">
+                <tbody>
+                <tr>
+                    {% for num in range(8) %}
+                        <td></td>
+                    {% endfor %}
+                </tr>
+                </tbody>
+            </table>
+        </div>
 
-                    <ul id="classic_list" class="media-list" data-intro="Or you can browse through a list of classic trails." data-step="6">
-                        {% for item in classic_routes %}
-                            <li class="media">
-                                <a class="pull-left">
-                                    <img class="media-object img-polaroid" src="
+    </div>
+    <div id="lists" class="row-fluid">
+
+        <div id="classic_list_box" class="pull-left span6">
+            <div class="row-fluid" style="margin-top:10px">
+                <div class="navbar">
+                    <div class="navbar-inner">
+                        <div class="container" style="position:relative">
+                            <h1 class="letterpress">Classic Routes</h1>
+                        </div>
+                    </div>
+                </div>
+
+                <ul id="classic_list" class="media-list"
+                    data-intro="Or you can browse through a list of classic trails." data-step="6">
+                    {% for item in classic_routes %}
+                        <li class="media">
+                            <a class="pull-left">
+                                <img class="media-object img-polaroid" src="
                                     {% if item.properties.photo.small %}
                                     {{ item.properties.photo.small }}
                                     {% else %}
                                     static/images/75x75.gif
                                     {% endif %}
                                     ">
-                                </a>
-
-                                <div class="media-body">
-                                    <a href="{{ item.properties.path }}">
-                                        <h4 class="media-heading">{{ item.properties.name }}</h4>
-                                    </a>
-                                    {% for name in  item.properties.regions %}
-                                    {{ name }}
-                                    {% if not loop.last %},{% endif %}
-                                    {% endfor %}
-                                </div>
-                            </li>
-                        {% endfor %}
-
-                    </ul>
-                    <ul class="pager">
-                        <li id="cl_previous"><a href="#">Previous</a></li>
-                        <li id="cl_next"><a href="#">Next</a></li>
-                    </ul>
-                </div>
-                </div>
-                <div id="recent_photo_box" class="pull-right span6">
-                    <div class="row-fluid" style="margin-top:10px">
-                    <div class="navbar">
-                        <div class="navbar-inner">
-                            <div class="container" style="position:relative">
-                            <h1 class="letterpress">Recent Photos</h1></div>
-                            </div>
-                        </div>
-                    <ul id="recent_list" class="media-list">
-                        {% for item in recent_photos %}
-                            <li class="media">
-                                <a href="profile/{{ item.user.uid }}" class="pull-left">
-                                <img class="img-polaroid media-object" src="{{ item.user.picture }}"> {{ item.user.first_name }} {{ item.user.last_name }}
                             </a>
 
-                                <div class="media-body"><a href="{{ item.path }}"><img src="{{ item.small }}" class="img-polaroid contrib pull-right">
+                            <div class="media-body">
+                                <a href="{{ item.properties.path }}">
+                                    <h4 class="media-heading">{{ item.properties.name }}</h4>
                                 </a>
+                                {% for name in  item.properties.regions %}
+                                    {{ name }}
+                                    {% if not loop.last %},{% endif %}
+                                {% endfor %}
+                            </div>
+                        </li>
+                    {% endfor %}
 
-                                    <p>{{ item.text }}
+                </ul>
+                <ul class="pager">
+                    <li id="cl_previous"><a href="#">Previous</a></li>
+                    <li id="cl_next"><a href="#">Next</a></li>
+                </ul>
+            </div>
+        </div>
+        <div id="recent_photo_box" class="pull-right span6">
+            <div class="row-fluid" style="margin-top:10px">
+                <div class="navbar">
+                    <div class="navbar-inner">
+                        <div class="container" style="position:relative">
+                            <h1 class="letterpress">Recent Photos</h1></div>
+                    </div>
+                </div>
+                <ul id="recent_list" class="media-list">
+                    {% for item in recent_photos %}
+                        <li class="media">
+                            <a href="profile/{{ item.user.uid }}" class="pull-left">
+                                <img class="img-polaroid media-object"
+                                     src="{{ item.user.picture }}"> {{ item.user.first_name }} {{ item.user.last_name }}
+                            </a>
+
+                            <div class="media-body"><a href="{{ item.path }}"><img src="{{ item.small }}"
+                                                                                   class="img-polaroid contrib pull-right">
+                            </a>
+
+                                <p>{{ item.text }}
                                     <span style="float:right;margin-right: 15px">
                                     <a href="{{ item.path }}" class="contrib">
                                         <b>More</b></a></span>
-                                    </p>
-                                </div>
-                            </li>
+                                </p>
+                            </div>
+                        </li>
 
-                        {% endfor %}
-                    </ul>
-                </div>
-                </div>
+                    {% endfor %}
+                </ul>
             </div>
+        </div>
+    </div>
 
 {% endblock %}

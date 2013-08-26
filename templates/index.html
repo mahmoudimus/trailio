@@ -11,88 +11,94 @@
     <meta charset="utf-8">
     {% block meta %}
     {% endblock %}
-
-    <link href="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/css/bootstrap-combined.no-icons.min.css" rel="stylesheet">
-    <link href="//netdna.bootstrapcdn.com/font-awesome/3.2.1/css/font-awesome.css" rel="stylesheet">
     <link href="/static/css/app.css" rel="stylesheet">
     <title>{% block title %} {% endblock %}</title>
 
 </head>
 
 <body style="padding-top: 40px">
-<div id="fb-root"></div>
+
 <div class="container" id="container">
-    <div class="navbar" id="nav">
-        <div class="navbar-inner">
-            <div class="container" style="position:relative">
-                <ul class="nav" id="navbar">
-                    <a class="brand" href="/"><img src="/static/images/logo-small.png" id="sitelogo" height="50"></a>
-                </ul>
 
+    <div class="navbar navbar-default" role="navigation">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-ex1-collapse">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/"><img src="/static/images/logo-small.png" id="sitelogo" height="50"></a>
+            {#            <a class="navbar-brand" href="#">Brand</a>#}
+        </div>
+        {% if user %}
 
-                <div class="dropdown pull-right" id="user_box" style="height:100%;display:inline-block">
-                    {% if user %}
+            <div class="collapse navbar-collapse navbar-ex1-collapse">
+
+                <ul class="nav navbar-nav navbar-right">
+                    <li class="dropdown">
+
                         <div class="media" id="loggedin" style="display:inline-block;margin-top:12px">
                             <a class="pull-left" href="#">
-                                <img class="media-object img-polaroid" src="{{ user.picture }}" style="max-height: 40px">
+                                <img class="media-object img-thumbnail" src="{{ user.picture }}">
                             </a>
-                            <div class="media-body pull-right" style="padding:15px 5px 5px 0;margin-left: 0">
-                                <a class="dropdown-toggle" data-toggle="dropdown" href="#" data-bypass>
-                                    <h4 class="media-heading">{{ user.first_name }}
-                                    <b class="caret"></b>
-                                    </h4>
-                                </a>
-                                <ul class="dropdown-menu" role="menu" aria-labelledby="dLabel">
-                                    <li><a href="/profile/{{ user.uid }}" id="profile" tabindex="-1">User Profile</a></li>
-                                    <li><a href="#" id="logout" tabindex="-1">Logout</a></li>
-                                </ul>
-                                </div>
-                            </div>
-                    {% else %}
-                        <form action="/login" method = "get">
-                           <div style="margin-top: 25%"><button class="btn" id="login">Login</button></div>
 
-                        </form>
-                    {% endif %}
+                            <div class="media-body pull-right" style="padding:15px 5px 5px 0;margin-left: 0">
+
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">{{ user.first_name }} <b
+                                        class="caret"></b></a>
+                                <ul class="dropdown-menu">
+                                    <li><a href="/profile/{{ user.uid }}">User Profile</a></li>
+                                    <li><a href="#">Logout</a></li>
+                                </ul>
+                            </div>
+                        </div>
+                    </li>
+
+                </ul>
+            </div>
+        {% else %}
+            <form action="/login" method="get">
+                <div style="margin-top: 25%">
+                    <button class="btn" id="login">Login</button>
                 </div>
 
-
-            </div>
-        </div>
+            </form>
+        {% endif %}
     </div>
 
-    <div class="row-fluid">
-        <div class="span9" id="left">
+
+    <div class="row">
+        <div class="col-md-9" id="left">
             <div id="main" style="width:100%;min-height:400px">
-            {% block body %}
+                {% block body %}
 
 
 
-            {% endblock %}
+                {% endblock %}
             </div>
         </div>
-        <div class="span3" id="right">
-                 <div id="intro_tour">
-                    {% block tour %}{% endblock %}
-                </div>
-                <hr style="margin:10px 0 10px;width:250px">
+        <div class="col-md-3" id="right">
+            <div id="intro_tour">
+                {% block tour %}{% endblock %}
+            </div>
+            <hr style="margin:10px 0 10px;width:250px">
 
-                <form class="navbar-search pull-left" method = "get">
+            <form role="form" method="get" class="form-horizontal">
+                <div class="form-group">
                     <label>Search for a Trail.</label>
-                  <input type="text" class="search-query" id = "trail_search_box" data-provide="typeahead" autocomplete = "off" placeholder="Find a trail.">
-                </form>
+                    <input type="search" class="input-lg form-control search-query" id="trail_search_box"
+                           data-provide="typeahead" autocomplete="off" placeholder="Find a trail.">
+                </div>
+            </form>
             <hr>
             <br>
-            <div class="fb-activity" data-site="http://www.trail.io" data-app-id="124265567722564"
-                 data-action="trailio:go_on" data-width="250" data-height="300" data-header="true"
-                 data-recommendations="true"></div>
         </div>
-    </div>
 
-    <div class="row-fluid">
-        <div class="navbar span10 offset1 footer">
-            <div class="navbar-inner">
-                <div class="container" style="position:relative;text-align:center">
+        <div class="row-fluid">
+            <div class="navbar span10 offset1 footer">
+                <div class="navbar-inner">
+                    <div class="container" style="position:relative;text-align:center">
                     <span>
                     <a class="copyright">© 2012 Trail.io. All Rights Reserved</a>  |
                     <a href="/page/terms_of_service">Terms of Service</a>  |
@@ -100,36 +106,38 @@
                     <a href="/feedback">Contact Us</a>
 
                     </span>
+                    </div>
                 </div>
             </div>
         </div>
+
+    </div>
     </div>
 
-</div>
+    {#<script type="text/javascript">#}
+    {#    var appid = {{ appid }}#}
+    {#    var _gaq = _gaq || [];#}
+    {#    _gaq.push(['_setAccount', 'UA-35535522-1']);#}
+    {#    _gaq.push(['_trackPageview']);#}
+    {##}
+    {#    (function () {#}
+    {#        var ga = document.createElement('script');#}
+    {#        ga.type = 'text/javascript';#}
+    {#        ga.async = true;#}
+    {#        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';#}
+    {#        var s = document.getElementsByTagName('script')[0];#}
+    {#        s.parentNode.insertBefore(ga, s);#}
+    {#    })();#}
+    {#</script>#}
 
-{#<script type="text/javascript">#}
-{#    var appid = {{ appid }}#}
-{#    var _gaq = _gaq || [];#}
-{#    _gaq.push(['_setAccount', 'UA-35535522-1']);#}
-{#    _gaq.push(['_trackPageview']);#}
-{##}
-{#    (function () {#}
-{#        var ga = document.createElement('script');#}
-{#        ga.type = 'text/javascript';#}
-{#        ga.async = true;#}
-{#        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';#}
-{#        var s = document.getElementsByTagName('script')[0];#}
-{#        s.parentNode.insertBefore(ga, s);#}
-{#    })();#}
-{#</script>#}
-
-<script data-main="/static/js/main" src="/static/js/libs/require/require.js"></script>
-<script>
-    define('config',function(){
-        return {
-        {% block script %}{% endblock %}
-        };
-    });
-</script>
+    <script data-main="/static/js/main" src="/static/js/libs/require/require.js"></script>
+    <script>
+        define('config', function () {
+            return {
+                {% block script %}{% endblock %}
+            };
+        });
+    </script>
 </body>
+
 </html>​
