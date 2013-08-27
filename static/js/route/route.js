@@ -31,8 +31,9 @@ define([
 
     });
     return  Backbone.View.extend({
+          supressMouseEvent : false
 
-        el:'#main'
+        , el:'#main'
         , currentView : null
         , initialize : function () {
             _.bindAll(this);
@@ -57,6 +58,7 @@ define([
             "click #view_photo": "upload_photo_view",
             "click #view_elevation": "elevation_view",
             "click #save_route":      "save_route",
+            "click .nav-pills" : "deactivate",
             'click .metric': 'change_units',
             'click .rating .star': 'vote',
             'slid .carousel' : 'rotate_photo',
@@ -68,7 +70,7 @@ define([
                 this.$('.carousel-control').fadeOut(100);
             },
             'mouseenter div.carousel-caption-mouse': function(){
-                this.$('.carousel-caption').slideDown(500);
+                this.$('.carousel-caption').slideDown(500)
             },
             'mouseleave div.carousel-caption-mouse': function(){
                 this.$('.carousel-caption').slideUp(500);
@@ -120,14 +122,16 @@ define([
         }
 
         , show_map_view : function() {
-            this.$('.nav-pills #view_map').tab('show');
+            this.$el.find('.nav-pills li').removeClass('active')
+            this.$('#view_map').addClass('active');
             this.change_view(new RouteMapView({model:this.route}));
             this.currentView.drawmap();
             this.rotate_photo();
         }
 
         , elevation_view:function () {
-            this.$('.nav-pills #view_elevation').tab('show');
+            this.$el.find('.nav-pills li').removeClass('active')
+            this.$('#view_elevation').addClass('active');
             var tab_content = this.$('.tab-content');
             var width = tab_content.width();
             var height = tab_content.height();
@@ -139,7 +143,8 @@ define([
 
 
         , upload_photo_view:function () {
-            this.$('.nav-pills #view_photo').tab('show');
+            this.$el.find('.nav-pills li').removeClass('active')
+            this.$('#view_photo').addClass('active');
             var view = new UploadImage({collection: this.photos});
             this.change_view(view);
             view.init_upload();
@@ -160,10 +165,10 @@ define([
                     }
                 }
             });
-        },
+        }
 
 
-        vote: function(e){
+        , vote: function(e){
             var ind = this.$('.carousel-inner').find(".active").index();
             var photo = this.photos.at(ind);
             var that = this;

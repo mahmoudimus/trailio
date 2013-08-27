@@ -16,7 +16,7 @@
 
 </head>
 
-<body style="padding-top: 40px">
+<body>
 
 <div class="container" id="container">
 
@@ -31,13 +31,11 @@
             <a class="navbar-brand" href="/"><img src="/static/images/logo-small.png" id="sitelogo" height="50"></a>
             {#            <a class="navbar-brand" href="#">Brand</a>#}
         </div>
-        {% if user %}
+        {% if user.uid %}
 
             <div class="collapse navbar-collapse navbar-ex1-collapse">
-
                 <ul class="nav navbar-nav navbar-right">
                     <li class="dropdown">
-
                         <div class="media" id="loggedin" style="display:inline-block;margin-top:12px">
                             <a class="pull-left" href="#">
                                 <img class="media-object img-thumbnail" src="{{ user.picture }}">
@@ -58,19 +56,22 @@
                 </ul>
             </div>
         {% else %}
-            <form action="/login" method="get">
-                <div style="margin-top: 25%">
-                    <button class="btn" id="login">Login</button>
-                </div>
+            <div class="collapse navbar-collapse navbar-ex1-collapse">
+                <ul class="nav navbar-nav navbar-right">
 
+            <form action="/login" method="get">
+                <button class="btn btn-default btn-lg login" id="login">Login</button>
             </form>
+                </ul>
+            </div>
+
         {% endif %}
     </div>
 
 
     <div class="row">
         <div class="col-md-9" id="left">
-            <div id="main" style="width:100%;min-height:400px">
+            <div id="main">
                 {% block body %}
 
 
@@ -95,22 +96,15 @@
             <br>
         </div>
 
-        <div class="row-fluid">
-            <div class="navbar span10 offset1 footer">
-                <div class="navbar-inner">
-                    <div class="container" style="position:relative;text-align:center">
-                    <span>
-                    <a class="copyright">© 2012 Trail.io. All Rights Reserved</a>  |
-                    <a href="/page/terms_of_service">Terms of Service</a>  |
-                    <a href="/page/privacy_policy">Privacy Policy</a>  |
-                    <a href="/feedback">Contact Us</a>
+        <div class="row">
+            <div class = "col-md-6 col-md-offset-3">
+                  <p class="navbar-text">                    <a class="copyright">© 2012 Trail.io. All Rights Reserved</a>  |
+                            <a href="/page/terms_of_service">Terms of Service</a>  |
+                            <a href="/page/privacy_policy">Privacy Policy</a>  |
+                            <a href="/feedback">Contact Us</a>
+                </p>
 
-                    </span>
-                    </div>
-                </div>
             </div>
-        </div>
-
     </div>
     </div>
 

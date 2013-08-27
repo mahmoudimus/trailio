@@ -316,7 +316,7 @@ def front():
     :return:
     """
     ctx = {
-        'classic_routes' : [r.json for r in NamedRoute.get_classic_routes()],
+        'classic_routes' : [r.json_summary for r in NamedRoute.get_classic_routes()],
         'recent_photos' : [p.json for p in Photo.recent_photos()],
         'user' : None
     }

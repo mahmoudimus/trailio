@@ -2,11 +2,19 @@ define([
     'jquery',
     'underscore',
     'backbone',
-    'templates/templates',
+    "handlebars",
+    'text!templates/route_map.html',
     'utils',
     'gmaps',
     'libs/spin'
-], function($, _, Backbone, Templates, Utils){
+], function($, _, Backbone, Handlebars, RouteMapTemplate, Utils){
+    var icon = {
+          path : google.maps.SymbolPath.CIRCLE
+        , scale : 5
+        , fillOpacity : 1
+        , strokeWeight : 0
+    };
+
 
     return Backbone.View.extend({
 
@@ -15,24 +23,25 @@ define([
         }
         , photo_marker : null
         , events: {
-            "click #reverse": "reverse",
-            "click #set_topo": "settopo"
+              "click #reverse": "reverse"
+            , "click #set_topo": "settopo"
         }
         , render:function () {
-            this.$el.html(Templates.route_map_div);
+            var template = Handlebars.compile(RouteMapTemplate);
+            this.$el.html(template());
             return this
         }
 
         , drawmap: function() {
             var mapOptions = {
-                zoom:10,
-                zoomControl:true,
-                minZoom:8,
-                maxZoom:15,
-                center:Utils.GetLocation() || new google.maps.LatLng(37.1, -118.5),
-                mapTypeId:google.maps.MapTypeId.TERRAIN,
-                disableDefaultUI:true,
-                scrollwheel:false
+                  zoom : 10
+                , zoomControl:true
+                , minZoom:8
+                , maxZoom:15
+                , center:Utils.GetLocation() || new google.maps.LatLng(37.1, -118.5)
+                , mapTypeId:google.maps.MapTypeId.TERRAIN
+                , disableDefaultUI:true
+                , scrollwheel:false
             };
             this.map = new google.maps.Map($('#map_canvas')[0], mapOptions);
             this.model.get('polyline').setMap(this.map);
@@ -56,44 +65,28 @@ define([
             if (this.photo_marker){
                 this.photo_marker.setMap(null)
             }
-
+            var p_icon = _.extend({fillColor : "yellow"}, icon);
             this.photo_marker = new google.maps.Marker({
                   map : this.map
                 , position : new google.maps.LatLng(point[1], point[0])
-                , icon : {
-                      path : google.maps.SymbolPath.CIRCLE
-                    , fillColor : "yellow"
-                    , scale : 5
-                    , fillOpacity : 1
-                    , strokeWeight : 0
-                }
+                , icon : p_icon
             })
         }
 
         , drawmarkers: function() {
             var node1 = this.model.get('geometry').coordinates[0];
             var node2 = _.last(this.model.get('geometry').coordinates);
+            var start = _.extend({fillColor : "green"}, icon);
+            var end = _.extend({fillColor : "red"}, icon);
             this.marker1 = new google.maps.Marker({
-                map: this.map,
-                position: new google.maps.LatLng(node1[1], node1[0]),
-                icon:{
-                    path:google.maps.SymbolPath.CIRCLE,
-                    fillColor:"green",
-                    scale:5,
-                    fillOpacity:1,
-                    strokeWeight:0
-                }
+                  map : this.map
+                , position : new google.maps.LatLng(node1[1], node1[0])
+                , icon : start
             });
             this.marker2 = new google.maps.Marker({
-                map:this.map,
-                position: new google.maps.LatLng(node2[1], node2[0]),
-                icon:{
-                    path:google.maps.SymbolPath.CIRCLE,
-                    fillColor:"red",
-                    scale:5,
-                    fillOpacity:1,
-                    strokeWeight:0
-                }
+                  map:this.map
+                , position: new google.maps.LatLng(node2[1], node2[0])
+                , icon : end
             });
         },
 

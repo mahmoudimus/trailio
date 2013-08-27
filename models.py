@@ -78,6 +78,21 @@ class Route(Document):
             'geometry': self.coordinates,
         }
 
+    @property
+    def json_summary(self):
+        return {
+            'type' : 'Feature',
+            'properties' : {
+                'name' : self.name,
+                'id' : str(self.id),
+                'votes' : self.votesum,
+                'regions' : self.regions,
+                'photo' : self.photo.json if self.photo else DEFAULT_ROUTE_PHOTO,
+                'photos' : [p.json for p in self.photos()],
+                'distance' : self.distance,
+                'path' : self.path
+            },
+        }
 class AnonRoute(Route):
 
     @classmethod
