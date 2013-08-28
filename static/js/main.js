@@ -9,7 +9,7 @@ requirejs.config({
         "async": "libs/require/async",
         "d3": "libs/d3/d3.v2",
 //        "bootstrap": "https://netdna.bootstrapcdn.com/twitter-bootstrap/2.3.0/js/bootstrap.min",
-        "bootstrap" : "libs/bootstrap/bootstrap.min",
+        "bootstrap" : "libs/bootstrap/bootstrap",
         'fileupload' : 'libs/fileupload/jquery.fileupload.js',
         "text" : "libs/require/text",
         "handlebars" : "libs/handlebars"
@@ -37,8 +37,8 @@ requirejs.config({
         },
 
         "bootstrap": {
-            "deps": ["jquery"],
-            "exports": "$.fn.popover"
+            "deps": ["jquery"]
+//            "exports": "$.fn.carousel"
         },
         "handlebars" : {
             "exports" : "Handlebars"

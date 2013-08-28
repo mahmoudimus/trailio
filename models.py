@@ -270,7 +270,7 @@ class Vote(Document):
     key = StringField(primary_key=True)
 
     @classmethod
-    def get_or_set_vote(cls, user_id, item_id):
+    def get_or_set_vote(cls, user_id, obj_class, item_id):
         """
 
         :param user_id:
@@ -278,8 +278,13 @@ class Vote(Document):
         :return: a Boolean, indicating that this is the user's first vote for the object.
         """
         k = str(user_id) + str(item_id)
-        vote, created = cls.objects().get_or_create(key = k)
-        return created
+        try:
+            v = cls.objects(key = k).get()
+            return False
+        except DoesNotExist:
+            v = cls(key = k)
+            v.save()
+            return True
 
     @classmethod
     def has_voted(cls, user_id, item_id):

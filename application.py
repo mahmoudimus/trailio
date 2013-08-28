@@ -229,8 +229,9 @@ def vote_photo(pid):
     :param pid:
     :return:
     """
+
     if 'uid' in session:
-        v = Vote.get_or_set_vote(session['uid'], pid)
+        v = Vote.get_or_set_vote(session['uid'], Photo, pid)
         if v:
             Photo.vote(pid)
             return jsonify({'result' : True})

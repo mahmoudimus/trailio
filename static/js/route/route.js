@@ -8,9 +8,10 @@ define([
     'route/routemapview',
     'route/uploadimage',
     'route/elevationview',
+    'bootstrap',
     'utils',
-    'libs/spin',
-    'async!http://maps.googleapis.com/maps/api/js?key=AIzaSyCn0mXVcSCWexEo-VAxdghkyCKVw8HKUOs&libraries=geometry,places&sensor=true'
+    'libs/spin'
+
 ], function ($, _, Backbone, Globals, Templates, RouteMapView, UploadImage, ElevationView) {
 
 
@@ -31,9 +32,9 @@ define([
 
     });
     return  Backbone.View.extend({
-          supressMouseEvent : false
+//          supressMouseEvent : false
 
-        , el:'#main'
+          el:'#main'
         , currentView : null
         , initialize : function () {
             _.bindAll(this);
@@ -63,23 +64,26 @@ define([
             'click .rating .star': 'vote',
             'slid .carousel' : 'rotate_photo',
 
-            'mouseenter div#contrib_carousel': function(){
+            'mouseenter #carousel': function(){
                 this.$('.carousel-control').fadeIn(100);
+                this.$('.carousel-caption').fadeIn(100)
             },
-            'mouseleave div#contrib_carousel': function() {
+            'mouseleave #carousel': function() {
                 this.$('.carousel-control').fadeOut(100);
+                this.$('.carousel-caption').fadeOut(100);
             },
-            'mouseenter div.carousel-caption-mouse': function(){
-                this.$('.carousel-caption').slideDown(500)
-            },
-            'mouseleave div.carousel-caption-mouse': function(){
-                this.$('.carousel-caption').slideUp(500);
+            'click .carousel-control' : function(e){
+                this.$('.carousel').carousel(e.toElement.attributes.getNamedItem('data-slide').nodeValue);
             }
         }
 
         , render:function () {
 
             this.show_map_view();
+
+//            $('#carousel').on('slide.bs.carousel', function (e) {
+//                console.log(e)
+//            })
             this.listenTo(this.photos, 'add', function(model){
                 this.$('.carousel-inner').append(Templates.image_item(model.attributes))
             }, this);

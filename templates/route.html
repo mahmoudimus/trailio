@@ -22,56 +22,52 @@
             </div>
         </div>
         <div class="row">
-        <ul class="nav nav-pills nav-stacked pull-right col-md-3">
-            <li id = "view_map"><a href = "#"><i class="icon-map-marker"></i>View Map</a></li>
-            <li id = "view_elevation"><a href = "#"><i class="icon-bar-chart"></i>Elevation Profile</a></li>
-            <li id = "view_photo" data-original-title=""><a href = "#" ><i class="icon-camera-retro"></i>Add Photo</a></li>
-            <li id = "save_route"><a href = "#" ><i class="icon-facebook"></i>Save Trail</a></li>
-            <hr>
+            <ul class="nav nav-pills nav-stacked pull-right col-xs-3 col-md-3">
+                <li id = "view_map"><a href = "#"><i class="icon-map-marker"></i>View Map</a></li>
+                <li id = "view_elevation"><a href = "#"><i class="icon-bar-chart"></i>Elevation Profile</a></li>
+                <li id = "view_photo" data-original-title=""><a href = "#" ><i class="icon-camera-retro"></i>Add Photo</a></li>
+                <li id = "save_route"><a href = "#" ><i class="icon-facebook"></i>Save Trail</a></li>
+                <hr>
 
-            <li id="distance" class="metric">
-                <a href = "#">
-                    <span class="label label-default">Distance</span>
-                    <br>
-                    <span id="dis_val">{{ properties.distance / 1000 }}</span>
-                    <span style="font-size: 85%" id="dis_unit"> Kilometers</span>
-                </a>
-            </li>
-        </ul>
-        <div class="tab-content col-md-9"></div>
-        </div>
+                <li id="distance" class="metric">
+                    <a href = "#">
+                        <span class="label label-default">Distance</span>
+                        <br>
+                        <span id="dis_val">{{ properties.distance / 1000 }}</span>
+                        <span style="font-size: 85%" id="dis_unit"> Kilometers</span>
+                    </a>
+                </li>
+            </ul>
+            <div class="tab-content col-xs-9 col-md-9"></div>
+            </div>
     <div class="row">
-    <div id="contrib_carousel" class="carousel slide pull-left col-md-12" data-interval="false">
+
+    <div id="carousel" class="carousel slide pull-left col-md-12" data-interval="false">
         <ol class="carousel-indicators">
             {% for item in properties.photos %}
-                <li data-target="#contrib_carousel" data-slide-to="{{ loop.index0 }}" {% if loop.first %}class="active"{% endif %}></li>
+                <li data-target="#carousel" data-slide-to="{{ loop.index0 }}" {% if loop.first %}class="active"{% endif %}></li>
             {% endfor %}
         </ol>
-
         <div class="carousel-inner" style="height:400px">
-
-            <div class="carousel-caption-mouse">
-            </div>
-
             {% for item in properties.photos%}
-            <span class="rating pull-right">
-                    <span class="star {% if item.voted %}voted{% endif %}"></span>
-            </span>
+            <div class="item{% if loop.first %} active{% endif %}">
+                <img src="{{ item.medium }}">
+                <div class="carousel-caption">
+                    <span class="rating pull-right">
+                        <span class="star{% if item.voted %} voted{% endif %}"></span>
+                    </span>
 
-            <div class="item {% if loop.first %}active{% endif %}" id="jid+{{ item.jid }}" style="height:400px">
-            <img style="width:100%" src="{{ item.medium }}">
-            <div class="carousel-caption" style="display:none">
-            <p style="font-size:16px">{{ item.text }}</p>
+                    <p>{{ item.text }}</p>
+                </div>
             </div>
-
-            </div>
-
             {% endfor %}
-
         </div>
-
-        <a class="carousel-control left" style="display:none" href="#contrib_carousel" data-slide="prev" data-bypass>&lsaquo;</a>
-        <a class="carousel-control right" style="display:none" href="#contrib_carousel" data-slide="next" data-bypass>&rsaquo;</a>
+        <a class="carousel-control left" style="display:none" href="#" data-slide="prev">
+            <span class="icon-prev"></span>
+        </a>
+        <a class="carousel-control right" style="display:none" href="#" data-slide="next">
+             <span class="icon-next"></span>
+        </a>
     </div>
     </div>
 {% endblock %}

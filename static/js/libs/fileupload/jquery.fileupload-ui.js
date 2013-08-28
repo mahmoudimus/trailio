@@ -18,6 +18,9 @@
         // Register as an anonymous AMD module:
         define([
             'jquery',
+            'handlebars',
+            'text!templates/image_upload_template.html',
+            'text!templates/image_download_template.html',
             'templates/templates',
             'libs/fileupload/load-image.min',
             'libs/fileupload/jquery.fileupload-fp',
@@ -31,7 +34,7 @@
             window.loadImage
         );
     }
-}(function ($, Templates, loadImage) {
+}(function ($, Handlebars, ImageUploadTemplate, ImageDownloadTemplate, loadImage) {
     'use strict';
     // The UI version extends the file upload widget
     // and adds complete user interface interaction:
@@ -81,7 +84,7 @@
             uploadTemplate: function (o) {
                 var rows = $();
                 $.each(o.files, function (index, file) {
-                    var row = $(Templates.image_upload_template);
+                    var row = $(ImageUploadTemplate);
                     row.find('.name').text(file.name);
                     row.find('.size').text(o.formatFileSize(file.size));
                     if (file.error) {
@@ -96,7 +99,7 @@
             downloadTemplate: function(o){
                 var rows = $();
                 $.each(o.files, function (index, file) {
-                    var row = $(Templates.image_download_template);
+                    var row = $(ImageDownloadTemplate);
                     row.find('.name').text(file.name);
                     row.find('.size').text(o.formatFileSize(file.size));
                     $("<img/>").attr('src', file.thumbnail_url).appendTo(row.find('.preview'));
