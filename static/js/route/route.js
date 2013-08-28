@@ -158,14 +158,14 @@ define([
             var selector = this.$('#save_route');
             var that = this;
             $.ajax({
-                url: '/api/vote/route/' + that.model.get('properties').id,
+                url: '/api/vote/route/' + that.route.get('properties').id,
                 type: 'post',
                 complete: function (xhr, status) {
                     var data = xhr.responseText;
                     if (data.hasOwnProperty('type')) {
-                        selector.addClass('disabled marked')
+                        selector.find('a').addClass('disabled marked')
                     } else {
-                        selector.wrap('<div class="alert alert-error" />');
+                        selector.find('a').wrap('<div class="alert alert-danger" />');
                     }
                 }
             });

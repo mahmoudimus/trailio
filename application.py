@@ -215,7 +215,7 @@ def vote_route(rid):
     """
     if 'uid' in session:
         uid = session['uid']
-        v = Vote.get_or_set_vote(uid, rid)
+        v = Vote.get_or_set_vote(uid, Route, rid)
         if v:
             NamedRoute.vote(rid)
             return jsonify({'result' : True})
