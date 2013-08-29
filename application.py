@@ -177,17 +177,12 @@ def image():
     :return:
     """
     error = {'result' : None}
-    application.logger.debug(request.method)
-    application.logger.debug(os.getcwd())
     if request.method == 'POST':
-        application.logger.debug(session)
         if 'uid' in session: #if user
-            application.logger.debug("UID detected")
             img = request.files.get('files[]')
             coords = request.values.get('coords').split(',')
             text = request.values.get('text')
             if coords and text:
-                application.logger.debug("coords and text detected")
                 key = s3_save_image(img)
                 path = request.values['path'].split('/')
                 if path[0] == 'named_route':
@@ -274,7 +269,10 @@ def named_route_page(name):
     :param name:
     :return:
     """
-    ctx = {'user' : None}
+    ctx = {
+        'user' : None,
+        'DEBUG' : application.config.get("DEBUG")
+        }
     user = User.get_user(session)
     if user: ctx['user'] = user.json
     route = NamedRoute.objects(name=' '.join(name.split('_'))).first()
@@ -288,7 +286,10 @@ def anon_route_page(rid):
     :param rid:
     :return:
     """
-    ctx = {'user' : None}
+    ctx = {
+        'user' : None,
+        'DEBUG' : application.config.get("DEBUG")
+        }
     user = User.get_user(session)
     if user: ctx['user'] = user.json
     route = AnonRoute.objects(id = rid).first()
@@ -302,7 +303,10 @@ def get_profile(uid):
     :param uid:
     :return:
     """
-    ctx = {'user': None}
+    ctx = {
+        'user': None,
+        'DEBUG' : application.config.get("DEBUG")
+    }
     user = User.get_user(session)
     if user: ctx['user'] = user.json
     profile = User.objects(uid = uid).get()
@@ -319,7 +323,8 @@ def front():
     ctx = {
         'classic_routes' : [r.json_summary for r in NamedRoute.get_classic_routes()],
         'recent_photos' : [p.json for p in Photo.recent_photos()],
-        'user' : None
+        'user' : None,
+        'DEBUG' : application.config.get("DEBUG")
     }
     user = User.get_user(session)
     if user: ctx['user'] = user.json
@@ -355,4 +360,4 @@ admin_view.add_view(NamedRouteView(NamedRoute))
 if __name__ == '__main__':
     port = int(sys.argv[1])
     application.config.from_object('local_settings')
-    application.run(debug=True, host="0.0.0.0", port=port)
+    application.run(host="0.0.0.0", port=port)
