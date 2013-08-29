@@ -12,7 +12,6 @@ def find_intermediate_point(p1, p2, d):
 
 
 class ElevationPath(object):
-    # SUFFIX = ''
     def __init__(self, path):
         self.path = path
         self.points = self.sample_points()

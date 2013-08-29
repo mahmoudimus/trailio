@@ -5,7 +5,7 @@ define([
     "handlebars",
     'text!templates/route_map.html',
     'utils',
-    'gmaps',
+    'main/gmaps',
     'libs/spin'
 ], function($, _, Backbone, Handlebars, RouteMapTemplate, Utils){
     var icon = {

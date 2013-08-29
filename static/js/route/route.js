@@ -3,7 +3,7 @@ define([
     'jquery',
     'underscore',
     'backbone',
-    'globals',
+    'main/globals',
     'templates/templates',
     'route/routemapview',
     'route/uploadimage',
@@ -32,8 +32,6 @@ define([
 
     });
     return  Backbone.View.extend({
-//          supressMouseEvent : false
-
           el:'#main'
         , currentView : null
         , initialize : function () {
@@ -73,17 +71,14 @@ define([
                 this.$('.carousel-caption').fadeOut(100);
             },
             'click .carousel-control' : function(e){
-                this.$('.carousel').carousel(e.toElement.attributes.getNamedItem('data-slide').nodeValue);
+                var dir = e.toElement.attributes.getNamedItem('data-slide').nodeValue;
+                this.$('.carousel').carousel(dir);
             }
         }
 
         , render:function () {
 
             this.show_map_view();
-
-//            $('#carousel').on('slide.bs.carousel', function (e) {
-//                console.log(e)
-//            })
             this.listenTo(this.photos, 'add', function(model){
                 this.$('.carousel-inner').append(Templates.image_item(model.attributes))
             }, this);

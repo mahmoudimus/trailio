@@ -25,7 +25,7 @@
 
  /* TYPEAHEAD PUBLIC CLASS DEFINITION
   * ================================= */
-
+//    console.log($)
   var Typeahead = function (element, options) {
     this.$element = $(element)
     this.options = $.extend({}, $.fn.typeahead.defaults, options)
@@ -174,9 +174,9 @@
         .on('keypress', $.proxy(this.keypress, this))
         .on('keyup',    $.proxy(this.keyup, this))
 
-      if ($.browser.chrome || $.browser.webkit || $.browser.msie) {
-        this.$element.on('keydown', $.proxy(this.keydown, this))
-      }
+//      if ($.browser.chrome || $.browser.webkit || $.browser.msie) {
+//        this.$element.on('keydown', $.proxy(this.keydown, this))
+//      }
 
       this.$menu
         .on('click', $.proxy(this.click, this))

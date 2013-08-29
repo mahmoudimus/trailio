@@ -1,5 +1,5 @@
 define([
-    'globals',
+    'main/globals',
     'jquery',
     'underscore',
     'backbone',

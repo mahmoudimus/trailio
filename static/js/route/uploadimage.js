@@ -2,13 +2,12 @@ define([
     'jquery',
     'underscore',
     'backbone',
-    "handlebars",
+    'handlebars',
     'text!templates/image_upload_container.html',
     'libs/fileupload/jquery.fileupload',
     'libs/fileupload/jquery.fileupload-fp',
     'libs/fileupload/jquery.fileupload-ui',
-    'libs/fileupload/jsjpegmeta',
-    'jquery-ui'
+    'libs/fileupload/jsjpegmeta'
 
 ], function($, _, Backbone, Handlebars, ImageUploadContainer){
     return Backbone.View.extend({

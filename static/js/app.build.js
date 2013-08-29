@@ -1,5 +1,15 @@
-requirejs.config({
 
+({
+    optimizeCss : "none",
+    skipDirOptimize : true,
+    appDir: "../../",
+    baseUrl: "static/js",
+    dir: "../../../trailio2-build",
+    modules: [
+        {
+            name: "main"
+        }
+    ],
     paths: {
         "jquery": "libs/jquery/jquery-1.9.1.min",
         "underscore" : "libs/underscore/underscore-min",
@@ -41,34 +51,4 @@ requirejs.config({
             "exports" : "Handlebars"
         }
     }
-
-});
-
-require(['front/front',
-        'route/route',
-        'main/trailsearch',
-        ],
-function(Front, Route, TrailSearch){
-    $(document).on("click", "a[href]", function(evt) {
-        if ($(this).attr("href") == '#'){
-            evt.preventDefault()
-        }
-    });
-
-    this.trailsearch = new TrailSearch();
-    var page = location.pathname.split('/')[1];
-    switch (page){
-        case '':
-            new Front();
-            break;
-        case 'route':
-            new Route();
-            break;
-        case 'named_route':
-            new Route();
-            break;
-
-
-    }
-//    console.log(page)
-});
+})
