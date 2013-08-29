@@ -1,15 +1,7 @@
 
 ({
-    optimizeCss : "none",
-    skipDirOptimize : true,
-    appDir: "../../",
-    baseUrl: "static/js",
-    dir: "../../../trailio2-build",
-    modules: [
-        {
-            name: "main"
-        }
-    ],
+    name: "main",
+    out: "main.built.js",
     paths: {
         "jquery": "libs/jquery/jquery-1.9.1.min",
         "underscore" : "libs/underscore/underscore-min",

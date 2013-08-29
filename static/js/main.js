@@ -46,7 +46,7 @@ requirejs.config({
 
 require(['front/front',
         'route/route',
-        'main/trailsearch',
+        'main/trailsearch'
         ],
 function(Front, Route, TrailSearch){
     $(document).on("click", "a[href]", function(evt) {
