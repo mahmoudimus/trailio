@@ -8,12 +8,6 @@ define([
     'main/gmaps',
     'libs/spin'
 ], function($, _, Backbone, Handlebars, RouteMapTemplate, Utils){
-    var icon = {
-          path : google.maps.SymbolPath.CIRCLE
-        , scale : 5
-        , fillOpacity : 1
-        , strokeWeight : 0
-    };
 
 
     return Backbone.View.extend({
@@ -65,36 +59,27 @@ define([
             if (this.photo_marker){
                 this.photo_marker.setMap(null)
             }
-            var p_icon = _.extend({fillColor : "yellow"}, icon);
             this.photo_marker = new google.maps.Marker({
                   map : this.map
                 , position : new google.maps.LatLng(point[1], point[0])
-                , icon : p_icon
+                , icon : {
+                      path : google.maps.SymbolPath.CIRCLE
+                    , scale : 5
+                    , fillOpacity : 1
+                    , strokeWeight : 0
+                    , fillColor : "yellow"
+                }
             })
         }
 
         , drawmarkers: function() {
-            var node1 = this.model.get('geometry').coordinates[0];
-            var node2 = _.last(this.model.get('geometry').coordinates);
-            var start = _.extend({fillColor : "green"}, icon);
-            var end = _.extend({fillColor : "red"}, icon);
-            this.marker1 = new google.maps.Marker({
-                  map : this.map
-                , position : new google.maps.LatLng(node1[1], node1[0])
-                , icon : start
-            });
-            this.marker2 = new google.maps.Marker({
-                  map:this.map
-                , position: new google.maps.LatLng(node2[1], node2[0])
-                , icon : end
-            });
+            this.model.get("start").setMap(this.map);
+            this.model.get("end").setMap(this.map);
         },
 
         removemarkers: function() {
-            this.marker1.setMap(null);
-            delete this.marker1;
-            this.marker2.setMap(null);
-            delete this.marker2;
+            this.model.get("start").setMap(null);
+            this.model.get("end").setMap(null);
         },
 
         close:function () {

@@ -13,6 +13,7 @@ class Segment(Document):
     trail_names = ListField(StringField(), default=list)
     date = DateTimeField(default = datetime.now)
     coordinates = LineStringField()
+    # search_coords = LineStringField()
     length = FloatField()
     region = StringField()
 

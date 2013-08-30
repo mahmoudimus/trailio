@@ -2,14 +2,14 @@ define([
     'jquery',
     'underscore',
     'backbone',
-    'templates/templates',
+    'text!templates/seg_select_error.html',
     'utils'
 
-], function($, _, Backbone, Templates, Utils){
+], function($, _, Backbone, SegError, Utils){
     return Backbone.View.extend({
-        el : "#map_div",
+          el : "#map_div"
 
-        initialize:function () {
+        , initialize:function () {
             _.bindAll(this);
             var that = this;
             this.collection.on('sync', this.drawlines, this);
@@ -27,47 +27,41 @@ define([
             }, this);
 
             this.collection.on('continuous', function() {
-                $('#map_canvas').append(Templates.seg_select_error());
+                $('#map_canvas').append(SegError);
                 var $error = $('.alert-error');
                 $error.css({
-                    'position':'absolute',
-                    'right':    '0px'
+                     'position':'absolute'
+                    , 'right':    '0px'
                 });
                 $error.delay(2000).fadeOut(400);
             }, this)
+        }
 
-        },
-        drawmap:function () {
+        , drawmap:function () {
             var mapOptions = {
-                zoom:10,
-                zoomControl:true,
-                minZoom:8,
-                maxZoom:15,
-                center: Utils.GetLocation() || new google.maps.LatLng(37.1, -118.5),
-                mapTypeId: google.maps.MapTypeId.TERRAIN,
-                disableDefaultUI:true,
-                scrollwheel:false
+                 zoom : 10
+                , zoomControl : true
+                , minZoom : 8
+                , maxZoom : 15
+                , center : Utils.GetLocation() || new google.maps.LatLng(37.1, -118.5)
+                , mapTypeId : google.maps.MapTypeId.TERRAIN
+                , disableDefaultUI : true
+                , scrollwheel : false
             };
             this.map = new google.maps.Map(this.$('#map_canvas')[0], mapOptions);
-        },
-
-        drawlines:function () {
-            console.log('drawlines')
-            console.log(this.collection.models)
+        }
+        , drawlines:function () {
             _.each(this.collection.models, function (seg) {
                 seg.get('polyline').setMap(this.map);
             }, this);
-        },
+        }
 
-        clearlines:function () {
+        , clearlines:function () {
             if (this.collection) {
                 _.each(this.collection.models, function (seg) {
                     seg.get('polyline').setMap(null);
                 }, this);
             }
         }
-
     });
-
-
 });

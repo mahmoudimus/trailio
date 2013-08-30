@@ -10,19 +10,24 @@ RADIUS = 6378135
 class Path(MutableSequence):
 
     def __init__(self, *args, **kwargs):
+
+        # todo: add init with
+        properties = None
         if kwargs.get('type') == 'Feature':
             geo, properties, fields = kwargs.get('geometry'), kwargs.get('properties'), kwargs.get('name_keys', [])
-        else:
+        elif 'type' in kwargs:
             geo, properties, fields = kwargs, None, None
-        if geo.get('type') == "MultiLineString":
-            base_array = geo.get('coordinates').pop(0)
-            base_path = Path(**{"type": "LineString", "coordinates" : base_array})
-            for line in geo.get('coordinates'):
-                p = Path(**{"type": "LineString", "coordinates" : line})
-                base_path.extend(p)
-            self._list = base_path.list
-        if geo.get('type') == "LineString":
-            self._list = [Point(lat = p[1], lon=p[0]) for p in geo['coordinates']]
+            if geo.get('type') == "MultiLineString":
+                base_array = geo.get('coordinates').pop(0)
+                base_path = Path(**{"type": "LineString", "coordinates" : base_array})
+                for line in geo.get('coordinates'):
+                    p = Path(**{"type": "LineString", "coordinates" : line})
+                    base_path.extend(p)
+                self._list = base_path.list
+            elif geo.get('type') == "LineString":
+                self._list = [Point(lat = p[1], lon=p[0]) for p in geo['coordinates']]
+        elif args and type(args[0]) == Point:
+            self._list = args
 
         self.properties = properties
         self._step = 1
@@ -97,13 +102,34 @@ class Path(MutableSequence):
             return True
         return False
 
-    # @property
-    # def length(self):
-    #     l = 0
-    #     for i in range(1, len(self.list)):
-    #         l += self.list[i].distance(self.list[i-1])
-    #     return l
-
+    def sample_points(self, samples):
+        seg_size = max(30, len(self) / samples)
+        current_app.logger.debug(seg_size)
+        current = None
+        current_sample_length = 0
+        points = []
+        for i, point in enumerate(self):
+            if i == 0:
+                current = point
+                continue
+            d_to_next_point = current.distance(point)
+            if current_sample_length + d_to_next_point > seg_size:
+                delta = seg_size - current_sample_length
+                remainder = d_to_next_point - delta
+                # find an intermediate point, which will make the total length segsize
+                p = find_intermediate_point(current, point, delta)
+                points.append(p)
+                while remainder > seg_size:
+                    new_p = find_intermediate_point(p, point, seg_size)
+                    points.append(new_p)
+                    remainder -= seg_size
+                    p = new_p
+                current = p
+                current_sample_length = remainder
+            else:
+                current_sample_length += d_to_next_point
+                current = point
+        return points
 
 class Point(object):
     """A two-dimensional point in the [-90,90] x [-180,180] lat/lon space.
@@ -204,14 +230,8 @@ class Box(object):
             if south > north:
                 south, north = north, south
 
-        # Don't swap east and west to allow disambiguation of
-        # antimeridian crossing.
-
         self._ne = Point(north, east)
         self._sw = Point(south, west)
-        # else:
-        # 	self._ne = None
-        # 	self._sw = None
 
     north_east = property(lambda self: self._ne)
     south_west = property(lambda self: self._sw)
@@ -288,3 +308,7 @@ def make_ordered_path(segment_list, debug=False, distance=None):
     if segments:
         current_app.logger.error("Path did not utilize all segments. %s remaining." % len(segments))
     return base
+
+def find_intermediate_point(p1, p2, d):
+    theta = p1.bearing(p2)
+    return p1.compute_offset(theta, d)

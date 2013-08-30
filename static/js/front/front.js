@@ -65,7 +65,6 @@ define([
                 },
                 type : 'POST',
                 success : function(resp){
-                    console.log(resp)
                     location.href = resp.path
                 }
             });

@@ -14,6 +14,12 @@ define([
 
 ], function ($, _, Backbone, Globals, Templates, RouteMapView, UploadImage, ElevationView) {
 
+    var icon = {
+          path : google.maps.SymbolPath.CIRCLE
+        , scale : 5
+        , fillOpacity : 1
+        , strokeWeight : 0
+    };
 
     var Route = Backbone.Model.extend({
 
@@ -21,6 +27,15 @@ define([
             var path =  _.map(this.get('geometry').coordinates, function(point){
                 return new google.maps.LatLng(point[1], point[0])
                 });
+            this.set('start', new google.maps.Marker({
+                position : path[0]
+                , icon : _.extend({fillColor : 'green'}, icon)
+            }));
+            this.set('end', new google.maps.Marker({
+                position : _.last(path)
+                , icon : _.extend({fillColor : 'red'}, icon)
+            }));
+
             this.set('polyline', new google.maps.Polyline({
                 path: path,
                 strokeColor:'#004CFF',
@@ -28,6 +43,13 @@ define([
                 strokeWeight:5
             }));
             this.set('metric', true);
+        }
+        , reverse : function() {
+            var start = this.get('start').getPosition();
+            var end = this.get("end").getPosition();
+            this.get('start').setPosition(end);
+            this.get('end').setPosition(start);
+            this.get('properties').elevations.reverse();
         }
 
     });
