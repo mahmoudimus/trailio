@@ -6,42 +6,44 @@ import math
 
 SAMPLES = 350
 
+def find_intermediate_point(p1, p2, d):
+    theta = p1.bearing(p2)
+    return p1.compute_offset(theta, d)
 
 
 class ElevationPath(object):
     def __init__(self, path):
         self.path = path
-        self.points = path.sample_points(SAMPLES)
+        self.points = self.sample_points()
         self.make_elevation_arrays()
 
-    # def sample_points(self):
-    #     seg_size = max(30, len(self.path) / SAMPLES)
-    #     current_app.logger.debug(seg_size)
-    #     current = None
-    #     current_sample_length = 0
-    #     points = []
-    #     for i, point in enumerate(self.path):
-    #         if i == 0:
-    #             current = point
-    #             continue
-    #         d_to_next_point = current.distance(point)
-    #         if current_sample_length + d_to_next_point > seg_size:
-    #             delta = seg_size - current_sample_length
-    #             remainder = d_to_next_point - delta
-    #             # find an intermediate point, which will make the total length segsize
-    #             p = find_intermediate_point(current, point, delta)
-    #             points.append(p)
-    #             while remainder > seg_size:
-    #                 new_p = find_intermediate_point(p, point, seg_size)
-    #                 points.append(new_p)
-    #                 remainder -= seg_size
-    #                 p = new_p
-    #             current = p
-    #             current_sample_length = remainder
-    #         else:
-    #             current_sample_length += d_to_next_point
-    #             current = point
-    #     return points
+    def sample_points(self):
+        seg_size = max(30, len(self.path) / SAMPLES)
+        current = None
+        current_sample_length = 0
+        points = []
+        for i, point in enumerate(self.path):
+            if i == 0:
+                current = point
+                continue
+            d_to_next_point = current.distance(point)
+            if current_sample_length + d_to_next_point > seg_size:
+                delta = seg_size - current_sample_length
+                remainder = d_to_next_point - delta
+                # find an intermediate point, which will make the total length segsize
+                p = find_intermediate_point(current, point, delta)
+                points.append(p)
+                while remainder > seg_size:
+                    new_p = find_intermediate_point(p, point, seg_size)
+                    points.append(new_p)
+                    remainder -= seg_size
+                    p = new_p
+                current = p
+                current_sample_length = remainder
+            else:
+                current_sample_length += d_to_next_point
+                current = point
+        return points
 
     def make_elevation_arrays(self):
         self.arrays = {}
@@ -53,7 +55,6 @@ class ElevationPath(object):
                 latstr = ("S%d" % abs(lat)) if lat < 0 else ("N%d" % lat)
                 st = latstr + lonstr + '.hgt'
                 self.arrays[(lat, lon)] = ElevationArray(st)
-        print self.arrays
 
     def get_elevations(self):
         elevations = []
