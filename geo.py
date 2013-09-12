@@ -1,6 +1,6 @@
-from flask import current_app
-
 __author__ = 'peterfrance'
+
+from flask import current_app
 import math
 from collections import MutableSequence
 RADIUS = 6378135
@@ -10,8 +10,6 @@ RADIUS = 6378135
 class Path(MutableSequence):
 
     def __init__(self, *args, **kwargs):
-
-        # todo: add init with
         properties = None
         if kwargs.get('type') == 'Feature':
             geo, properties, fields = kwargs.get('geometry'), kwargs.get('properties'), kwargs.get('name_keys', [])

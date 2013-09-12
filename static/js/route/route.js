@@ -3,6 +3,7 @@ define([
     'jquery',
     'underscore',
     'backbone',
+    'libs/domReady',
     'main/globals',
     'templates/templates',
     'route/routemapview',
@@ -12,7 +13,7 @@ define([
     'utils',
     'libs/spin'
 
-], function ($, _, Backbone, Globals, Templates, RouteMapView, UploadImage, ElevationView) {
+], function ($, _, Backbone, domReady, Globals, Templates, RouteMapView, UploadImage, ElevationView) {
 
     var icon = {
           path : google.maps.SymbolPath.CIRCLE
@@ -58,11 +59,12 @@ define([
         , currentView : null
         , initialize : function () {
             _.bindAll(this);
-
-            this.route = new Route(Globals);
-            this.photos = new Backbone.Collection(this.route.get('properties').photos);
-            this.render();
-
+            var that = this;
+            domReady(function(){
+                that.route = new Route(Globals);
+                that.photos = new Backbone.Collection(that.route.get('properties').photos);
+                that.render();
+            });
         }
 
         , change_view : function(newview){

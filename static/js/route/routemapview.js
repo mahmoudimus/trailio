@@ -2,12 +2,11 @@ define([
     'jquery',
     'underscore',
     'backbone',
-    "handlebars",
     'text!templates/route_map.html',
     'utils',
     'main/gmaps',
     'libs/spin'
-], function($, _, Backbone, Handlebars, RouteMapTemplate, Utils){
+], function($, _, Backbone, RouteMapTemplate, Utils){
 
 
     return Backbone.View.extend({
@@ -21,8 +20,7 @@ define([
             , "click #set_topo": "settopo"
         }
         , render:function () {
-            var template = Handlebars.compile(RouteMapTemplate);
-            this.$el.html(template());
+            this.$el.html(RouteMapTemplate);
             return this
         }
 
