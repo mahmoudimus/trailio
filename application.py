@@ -72,8 +72,10 @@ def login():
     """
     user = User.get_user(session)
     application.logger.debug(user)
+    application.logger.debug(request.__dict__)
     if user:
         return redirect('/')
+    application.logger.debug(url_for('oauth_authorized', next=request.args.get('next') or request.referrer or None))
     return facebook.authorize(
         callback=url_for('oauth_authorized', next=request.args.get('next') or request.referrer or None)
     )
@@ -87,6 +89,7 @@ def oauth_authorized(resp):
     :return:
     """
     next_url = request.args.get('redirect_url')
+    # application.logger.debug(user)
     if resp is not None:
         session['facebook_token'] = (
             resp['access_token'],
