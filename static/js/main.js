@@ -11,6 +11,7 @@ requirejs.config({
         "text" : "libs/require/text",
         "handlebars" : "libs/handlebars",
         "typeahead" : "libs/bootstrap/bootstrap-typeahead"
+        , intro : "libs/introjs/intro"
     },
 
     shim: {
@@ -35,10 +36,13 @@ requirejs.config({
         },
         "typeahead" : {
             "deps" : ['jquery']
-        },
+        }
 
-        "handlebars" : {
-            "exports" : "Handlebars"
+        , handlebars : {
+            exports : "Handlebars"
+        }
+        , intro : {
+            exports : "intro"
         }
     }
 
@@ -46,7 +50,8 @@ requirejs.config({
 
 require(['front/front',
         'route/route',
-        'main/trailsearch'
+        'main/trailsearch',
+//        'libs/introjs/intro'
         ],
 function(Front, Route, TrailSearch){
     $(document).on("click", "a[href]", function(evt) {

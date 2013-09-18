@@ -9,11 +9,15 @@
     classic_routes : {{ classic_routes|tojson|safe }}
 {% endblock %}
 {% block tour %}
+    <div id="intro_tour">
     <hr style="margin:10px 0 10px;width:250px">
     <p class="lead">
         Not sure what to do?
-        <button class="btn btn-large" id="tour_button" type="button">Click Here</button>
+            <button class="btn btn-default" id="tour_button" >Click Here
+            </button>
     </p>
+            </div>
+
 {% endblock %}
 
 {% block title %}Trail.io -- Find Your Own Path{% endblock %}

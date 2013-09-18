@@ -2,9 +2,9 @@ define([
     'jquery',
     'underscore',
     'backbone',
-    'libs/introjs/intro',
-    'templates/templates'
-], function ($, _, Backbone, IntroJS, Templates) {
+    'intro'
+//    'templates/templates'
+], function ($, _, Backbone, IntroJS) {
 
     return Backbone.View.extend({
         el: '#intro_tour',
@@ -13,14 +13,12 @@ define([
         },
         template : _.template(''),
         initialize: function() {
-            this.delegateEvents(this.events)
+            console.log('init')
+//            this.delegateEvents(this.events)
         },
 
-        render: function() {
-            this.$el.html(Templates.front_tour());
-            return this
-        },
         start: function() {
+            console.log(IntroJS)
             IntroJS().start()
         },
 

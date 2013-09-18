@@ -8,10 +8,11 @@ define([
     'front/regionSearch',
     'templates/templates',
     'utils',
+    'tour',
     'libs/spin',
     'async!http://maps.googleapis.com/maps/api/js?key=AIzaSyCn0mXVcSCWexEo-VAxdghkyCKVw8HKUOs&libraries=geometry,places&sensor=true'
 
-], function(Globals, $, _, Backbone, MapSearchView, MapSearchList, RegionSearch,Templates, Utils){
+], function(Globals, $, _, Backbone, MapSearchView, MapSearchList, RegionSearch,Templates, Utils, Tour){
 
 
     var ClassicTrails = Backbone.Collection.extend({
@@ -28,8 +29,14 @@ define([
             'click #cl_previous': 'startprevious',
             'click #cl_next':       'startnext',
             'click #ref-map'    : 'refresh',
-            'click #show-trail' : 'showtrail'
+            'click #show-trail' : 'showtrail',
+//            'click #tour_button': 'tour'
         }
+//        , tour : function () {
+//            console.log('start');
+//            IntroJS().start();
+//        }
+
         , initialize : function () {
             _.bindAll(this);
 
@@ -73,6 +80,7 @@ define([
         , render: function () {
             this.mapview = new MapSearchView({collection: this.maplist});
             this.regionsearch = new RegionSearch({map : this.mapview.map});
+            this.tour = new Tour();
 
             return this
         }
