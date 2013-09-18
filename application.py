@@ -67,9 +67,8 @@ def login():
     """
     if User.get_user(session, anon=False):
         return redirect('/')
-    application.logger.debug(url_for('oauth_authorized', next=request.args.get('next') or request.referrer or None, _external=True))
     return facebook.authorize(
-        callback=url_for('oauth_authorized', next=request.args.get('next') or request.referrer or None, _external=True)
+        callback=url_for('oauth_authorized', redirect_url="/", _external=True)
     )
 
 @application.route('/oauth-authorized')
