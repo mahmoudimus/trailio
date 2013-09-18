@@ -75,6 +75,7 @@ def login():
     application.logger.debug(request.__dict__)
     if user:
         return redirect('/')
+    print url_for('oauth_authorized', next=request.args.get('next') or request.referrer or None)
     application.logger.debug(url_for('oauth_authorized', next=request.args.get('next') or request.referrer or None))
     return facebook.authorize(
         callback=url_for('oauth_authorized', next=request.args.get('next') or request.referrer or None)
