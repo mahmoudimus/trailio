@@ -59,26 +59,17 @@ def token_getter(token=None):
     """
     return session.get('facebook_token')
 
-# @app.route('/login')
-# def login():
-#     return twitter.authorize(callback=url_for('oauth_authorized',
-#         next=request.args.get('next') or request.referrer or None))
-
 @application.route('/login')
 def login():
     # todo: clean up redirect
     """
     :return:
     """
-    user = User.get_user(session)
-    application.logger.debug(user)
-    application.logger.debug(request.__dict__)
-    if user:
+    if User.get_user(session, anon=False):
         return redirect('/')
-    print url_for('oauth_authorized', next=request.args.get('next') or request.referrer or None)
-    application.logger.debug(url_for('oauth_authorized', next=request.args.get('next') or request.referrer or None))
+    application.logger.debug(url_for('oauth_authorized', next=request.args.get('next') or request.referrer or None, _external=True))
     return facebook.authorize(
-        callback=url_for('oauth_authorized', next=request.args.get('next') or request.referrer or None)
+        callback=url_for('oauth_authorized', next=request.args.get('next') or request.referrer or None, _external=True)
     )
 
 @application.route('/oauth-authorized')

@@ -198,14 +198,16 @@ class User(Document):
         }
 
     @classmethod
-    def get_user(cls, session):
+    def get_user(cls, session, anon=True):
         uid = session.get("uid")
         if uid:
             try:
                 return cls.objects(uid = uid).get()
             except DoesNotExist:
                 pass
-        return cls(admin = False)
+        if anon:
+            return cls(admin = False)
+        else: return None
 
 class Photo(Document):
     user = ReferenceField(User)
