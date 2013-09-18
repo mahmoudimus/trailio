@@ -166,7 +166,7 @@ def named_route_collection():
     length, page = request.args.get('length', 10), request.args.get('page', 1)
     return jsonify({
         'type' : 'FeatureCollection',
-        'features' : [r.json for r in NamedRoute.get_classic_routes(limit = length, page= page)]
+        'features' : [r.json for r in NamedRoute.get_classic_routes(limit = int(length), page = int(page))]
     })
 
 
@@ -211,8 +211,8 @@ def vote_route(rid):
     """
     if 'uid' in session:
         uid = session['uid']
-        v = Vote.get_or_set_vote(uid, Route, rid)
-        if v:
+        voted = Vote.get_or_set_vote(uid, Route, rid)
+        if not voted:
             NamedRoute.vote(rid)
             return jsonify({'result' : True})
         else: abort(403)
@@ -272,11 +272,14 @@ def named_route_page(name):
     """
     ctx = {
         'user' : None,
-        'DEBUG' : application.config.get("DEBUG")
+        'DEBUG' : application.config.get("DEBUG"),
+        'voted' : False
         }
     user = User.get_user(session)
-    if user: ctx['user'] = user.json
     route = NamedRoute.objects(name=' '.join(name.split('_'))).first()
+    if user:
+        ctx['user'] = user.json
+        ctx['voted'] = Vote.get_or_set_vote(user.id, Route, route.id)
     ctx.update(route.json)
     return render_template('route.html', **ctx)
 
@@ -289,11 +292,16 @@ def anon_route_page(rid):
     """
     ctx = {
         'user' : None,
-        'DEBUG' : application.config.get("DEBUG")
-        }
+        'DEBUG' : application.config.get("DEBUG"),
+        'voted' : False
+    }
+    application.logger(ctx)
     user = User.get_user(session)
-    if user: ctx['user'] = user.json
+    if user:
+        ctx['user'] = user.json
+        ctx['voted'] = Vote.get_or_set_vote(user.id, Route, rid)
     route = AnonRoute.objects(id = rid).first()
+
     ctx.update(route.json)
     return render_template('route.html', **ctx)
 

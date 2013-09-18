@@ -1,18 +1,19 @@
 define([
-    'main/globals',
-    'jquery',
-    'underscore',
-    'backbone',
-    'front/mapsearchview',
-    'front/mapsearchlist',
-    'front/regionSearch',
-    'templates/templates',
-    'utils',
-    'tour',
-    'libs/spin',
-    'async!http://maps.googleapis.com/maps/api/js?key=AIzaSyCn0mXVcSCWexEo-VAxdghkyCKVw8HKUOs&libraries=geometry,places&sensor=true'
+      'main/globals'
+    , 'jquery'
+    , 'underscore'
+    , 'backbone'
+    , 'handlebars'
+    , 'front/mapsearchview'
+    , 'front/mapsearchlist'
+    , 'front/regionSearch'
+    , 'utils'
+    , 'tour'
+    , 'text!templates/classic_trails.html'
+    , 'libs/spin'
+    , 'async!http://maps.googleapis.com/maps/api/js?key=AIzaSyCn0mXVcSCWexEo-VAxdghkyCKVw8HKUOs&libraries=geometry,places&sensor=true'
 
-], function(Globals, $, _, Backbone, MapSearchView, MapSearchList, RegionSearch,Templates, Utils, Tour){
+], function(Globals, $, _, Backbone, Handlebars,MapSearchView, MapSearchList, RegionSearch,Utils, Tour, ClassicItemTemp){
 
 
     var ClassicTrails = Backbone.Collection.extend({
@@ -23,19 +24,13 @@ define([
     return Backbone.View.extend({
         el:'#main'
         , page: 1
-        , length:10
-        , classic_temp : '<% _.each(models, function(model) { %> <li class="media"><a class="pull-left"><img class="media-object img-polaroid" src="<%=model.get("photo")%>"></a><div class="media-body"><a href="<%=model.get("path")%>"><h4 class="media-heading"><%=model.get("name")%></h4></a><%=model.get("region")%></div></li> <% }); %>'
-        , events: {
-            'click #cl_previous': 'startprevious',
-            'click #cl_next':       'startnext',
-            'click #ref-map'    : 'refresh',
-            'click #show-trail' : 'showtrail',
-//            'click #tour_button': 'tour'
+        , length : 10
+        , events : {
+              'click #cl_previous': 'startprevious'
+            , 'click #cl_next':       'startnext'
+            , 'click #ref-map'    : 'refresh'
+            , 'click #show-trail' : 'showtrail'
         }
-//        , tour : function () {
-//            console.log('start');
-//            IntroJS().start();
-//        }
 
         , initialize : function () {
             _.bindAll(this);
@@ -49,15 +44,16 @@ define([
             if (typeof spinner != 'undefined'){
                 spinner.stop();
             }
-            this.$('#classic_list').show("slide",{}, 500);
+            this.$('#classic_list').show(500);
         }
         , fill : function(direction, spinner) {
             var $list = this.$('#classic_list');
             $list.empty();
             this.page += direction;
-            var endindex = this.page*this.length;
-            var lists = _.template(Templates.classic_rows, {models:this.classic_routes.models.slice(endindex-this.length, endindex)});
-            $list.html(lists);
+            var endindex = this.page * this.length;
+            var list_temp = Handlebars.compile(ClassicItemTemp);
+            var html = list_temp({models:this.classic_routes.models.slice(endindex-this.length, endindex)})
+            $list.html(html);
             this.reload(spinner);
         }
 
@@ -86,37 +82,20 @@ define([
         }
 
         , refresh:function () {
-            var that = this;
             this.mapview.clearlines();
             var spinner = new Spinner().spin(this.$('#map_canvas')[0]);
             var bounds = this.mapview.map.getBounds();
             var zoom = this.mapview.map.getZoom();
-            var index = 0,
-                time = 6000;
-            var updatemessage = function() {
-                var texts = ['Sorry it\'s taking so long. It will be quicker next time. Promise.',
-                                'Hang in there. It will load shortly.',
-                                'Not sure what\'s taking so long...'];
-                that.$('#map_canvas').append(Templates.load_coming({text:texts[index]}));
-                that.$('.alert-info').css({
-                    'position':'absolute',
-                    'right':    '0px'
-                }).delay(2000).fadeOut(400);
-                index +=1;
-                time *= 2;
-                timeout = setTimeout(updatemessage, time)
-            };
-            var timeout = setTimeout(updatemessage, time);
             var loadbutton = this.$('#ref-map').button('loading');
 
             this.maplist.fetch({
                 data:{
-                    north:bounds.getNorthEast().lat(),
-                    south:bounds.getSouthWest().lat(),
-                    east:bounds.getNorthEast().lng(),
-                    west:bounds.getSouthWest().lng(),
-                    type:'bbox',
-                    zoom:zoom
+                     north : bounds.getNorthEast().lat()
+                    , south : bounds.getSouthWest().lat()
+                    , east : bounds.getNorthEast().lng()
+                    , west : bounds.getSouthWest().lng()
+                    , type : 'bbox'
+                    , zoom : zoom
                 },
                 reset: true,
                 complete:function () {
@@ -135,44 +114,48 @@ define([
         }
 
         , startnext: function() {
-            var that = this;
+//            var that = this;
             var $list = this.$('#classic_list');
+            var fill = this.fill,
+                reload = this.reload;
             $list.animate({
                 scrollTop: this.$el.offset().top
             }, 100);
             var spinner = new Spinner().spin($list[0]);
-            var new_range = _.range((this.page*this.length), (this.page*this.length)+this.length);
+            var new_range = _.range((this.page * this.length), (this.page * this.length) + this.length);
 
-            this.classic_routes.once('sync', function(){
-                $list.hide('slide', {}, 500, function() {
-                    if (that.classic_routes.at(new_range[0])){
-                        that.fill(1, spinner);
-                    } else {that.reload(spinner)}
+            this.classic_routes.once('sync', function(coll, resp, options){
+                $list.hide(500, function() {
+                    if (coll.at(new_range[0])){
+                        fill(1, spinner);
+                    } else {reload(spinner)}
                 });
             }, this);
 
             if (!this.classic_routes.at(new_range[0])){
                 this.classic_routes.fetch({
-                    data: {page:this.page+1, length:this.length},
-                    update:true,
-                    remove:false
+                    data: {  page : this.page + 1
+                           , length:this.length
+                    }
+                    , update:true
+                    , remove:false
                 });
             } else {
-                $list.hide('slide', {},500, function() {
-                    that.fill(1, spinner)
+                $list.hide(500, function() {
+                    fill(1, spinner)
                 });
             }
         }
 
         , startprevious: function() {
-            var that = this;
+            var fill = this.fill;
             var $list = this.$('#classic_list');
             $list.animate({
                 scrollTop: this.$el.offset().top
             }, 100);
-            if (this.page>=2){
-                $list.hide('slide', {},500, function() {
-                    that.fill( -1);
+            if (this.page >= 2){
+                $list.hide(500, function() {
+                    fill( -1);
                 });
             }
         }

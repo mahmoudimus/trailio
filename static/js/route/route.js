@@ -1,19 +1,20 @@
 define([
 
-    'jquery',
-    'underscore',
-    'backbone',
-    'libs/domReady',
-    'main/globals',
-    'templates/templates',
-    'route/routemapview',
-    'route/uploadimage',
-    'route/elevationview',
-    'bootstrap',
-    'utils',
-    'libs/spin'
+      'jquery'
+    , 'underscore'
+    , 'backbone'
+    , 'handlebars'
+    , 'libs/domReady'
+    , 'main/globals'
+    , 'route/routemapview'
+    , 'route/uploadimage'
+    , 'route/elevationview'
+    , 'text!templates/image_item.html'
+    , 'bootstrap'
+    , 'utils'
+    , 'libs/spin'
 
-], function ($, _, Backbone, domReady, Globals, Templates, RouteMapView, UploadImage, ElevationView) {
+], function ($, _, Backbone, Handlebars, domReady, Globals, RouteMapView, UploadImage, ElevationView, ImageItem) {
 
     var icon = {
           path : google.maps.SymbolPath.CIRCLE
@@ -104,7 +105,8 @@ define([
 
             this.show_map_view();
             this.listenTo(this.photos, 'add', function(model){
-                this.$('.carousel-inner').append(Templates.image_item(model.attributes))
+                var temp = Handlebars.compile(ImageItem);
+                this.$('.carousel-inner').append(temp(model.attributes))
             }, this);
 
             return this
@@ -175,16 +177,15 @@ define([
 
         , save_route: function() {
             var selector = this.$('#save_route');
-            var that = this;
+            var rid = this.route.get('properties').id;
             $.ajax({
-                url: '/api/vote/route/' + that.route.get('properties').id,
-                type: 'post',
-                complete: function (xhr, status) {
-                    var data = xhr.responseText;
-                    if (data.hasOwnProperty('type')) {
-                        selector.find('a').addClass('disabled marked')
+                 url: '/api/vote/route/' + rid
+                , type: 'post'
+                , complete: function (xhr, status) {
+                    if (xhr.status == 200 || xhr.status == 403) {
+                        selector.find('.alert').addClass('marked alert-success');
                     } else {
-                        selector.find('a').wrap('<div class="alert alert-danger" />');
+                        selector.find('.alert').addClass('alert-danger disabled');
                     }
                 }
             });
@@ -206,7 +207,7 @@ define([
 
                 statusCode: {
                     401: function(){
-                        that.$el.append(Templates.signin_error({'action':"vote."}));
+                        that.$el.append('<div class="alert alert-error"><span>You must sign in to vote</span></div>');
                         var $error = $('.alert-error');
                         $error.css({
                             'position':'absolute',

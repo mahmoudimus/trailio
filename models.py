@@ -278,16 +278,16 @@ class Vote(Document):
 
         :param user_id:
         :param item_id:
-        :return: a Boolean, indicating that this is the user's first vote for the object.
+        :return: a Boolean, indicating whether the vote already exists.
         """
         k = str(user_id) + str(item_id)
         try:
             v = cls.objects(key = k).get()
-            return False
+            return True
         except DoesNotExist:
             v = cls(key = k)
             v.save()
-            return True
+            return False
 
     @classmethod
     def has_voted(cls, user_id, item_id):

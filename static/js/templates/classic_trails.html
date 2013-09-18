@@ -1,0 +1,8 @@
+{{ #each models }}
+<li class="media"><a class="pull-left"><img class="media-object img-polaroid" src="{{ attributes.photo }}"></a>
+
+    <div class="media-body"><a href="{{ attributes.path }}"><h4 class="media-heading">{{ attributes.name }}</h4></a>
+        {{ attributes.region }}
+    </div>
+</li>
+{{ /each }}

@@ -21,7 +21,6 @@
             'handlebars',
             'text!templates/image_upload_template.html',
             'text!templates/image_download_template.html',
-            'templates/templates',
             'libs/fileupload/load-image.min',
             'libs/fileupload/jquery.fileupload-fp',
             'libs/fileupload/locale'

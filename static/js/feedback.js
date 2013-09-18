@@ -2,10 +2,10 @@ define([
     'jquery',
     'underscore',
     'backbone',
-    'templates/templates',
+//    'templates/templates',
     'backbone-forms'
 
-], function ($, _, Backbone, Templates) {
+], function ($, _, Backbone) {
     var RouteCollection = Backbone.Collection.extend({
         url:'/json/userroutes',
         model: Backbone.Model.extend({
