@@ -88,7 +88,7 @@ class Route(Document):
                 'id' : str(self.id),
                 'votes' : self.votesum,
                 'regions' : self.regions,
-                'photo' : self.photo.json if self.photo else DEFAULT_ROUTE_PHOTO,
+                'photo' : self.photo.json if self.photo else {'small': DEFAULT_ROUTE_PHOTO},
                 'photos' : [p.json for p in self.photos()],
                 'distance' : self.distance,
                 'path' : self.path

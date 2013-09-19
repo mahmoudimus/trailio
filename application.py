@@ -335,6 +335,7 @@ def front():
         'user' : None,
         'DEBUG' : application.config.get("DEBUG")
     }
+    application.logger.debug(ctx['classic_routes'])
     user = User.get_user(session)
     if user: ctx['user'] = user.json
     return render_template('front.html', **ctx)
@@ -361,10 +362,14 @@ class SegmentView(AdminView):
 class NamedRouteView(AdminView):
     column_filters = ['name']
 
+class PhotoView(AdminView):
+    pass
+
 admin_view = Admin(application, 'Trailio Models')
 admin_view.add_view(UserView(User))
 admin_view.add_view(SegmentView(Segment))
 admin_view.add_view(NamedRouteView(NamedRoute))
+admin_view.add_view(PhotoView(Photo))
 
 if __name__ == '__main__':
     port = int(sys.argv[1])
