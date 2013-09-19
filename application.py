@@ -80,7 +80,6 @@ def oauth_authorized(resp):
     :return:
     """
     next_url = request.args.get('redirect_url')
-    # application.logger.debug(user)
     if resp is not None:
         session['facebook_token'] = (
             resp['access_token'],
@@ -295,7 +294,6 @@ def anon_route_page(rid):
         'DEBUG' : application.config.get("DEBUG"),
         'voted' : False
     }
-    application.logger(ctx)
     user = User.get_user(session)
     if user:
         ctx['user'] = user.json
@@ -335,7 +333,6 @@ def front():
         'user' : None,
         'DEBUG' : application.config.get("DEBUG")
     }
-    application.logger.debug(ctx['classic_routes'])
     user = User.get_user(session)
     if user: ctx['user'] = user.json
     return render_template('front.html', **ctx)
