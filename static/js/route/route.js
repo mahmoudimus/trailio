@@ -131,7 +131,7 @@ define([
             var $unit = this.$('#dis_unit');
             if (this.route.get('metric')){
 //                change to imperial
-                $value.html(parseInt(this.route.get('properties').distance * 0.621371));
+                $value.html(parseInt(this.route.get('properties').distance * 0.000621371));
                 $unit.html('Miles')
             } else {
                 $value.html(parseInt(this.route.get('properties').distance / 1000));

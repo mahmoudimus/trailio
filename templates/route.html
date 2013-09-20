@@ -37,7 +37,7 @@
                     <a href = "#">
                         <span class="label label-default">Distance</span>
                         <br>
-                        <span id="dis_val">{{ properties.distance / 1000 }}</span>
+                        <span id="dis_val">{{ (properties.distance / 1000)|int }}</span>
                         <span style="font-size: 85%" id="dis_unit"> Kilometers</span>
                     </a>
                 </li>

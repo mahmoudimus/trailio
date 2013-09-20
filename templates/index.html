@@ -122,11 +122,11 @@
     {#    })();#}
     {#</script>#}
 
-{#    {% if DEBUG %}#}
-{#    <script data-main="/static/js/main" src="/static/js/libs/require/require.js"></script>#}
-{#    {% else %}#}
+    {% if DEBUG %}
+    <script data-main="/static/js/main" src="/static/js/libs/require/require.js"></script>
+    {% else %}
     <script data-main="/static/js/main.built" src="/static/js/libs/require/require.js"></script>
-{#    {% endif %}#}
+    {% endif %}
     <script>
         define('config', function () {
             return {
