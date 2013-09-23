@@ -63,7 +63,10 @@ class ElevationPath(object):
             p = (int(math.floor(point.lat)), int(math.floor(point.lon)))
             el = self.arrays[p].elevation_val(point)
             if el != 0 or len(elevations) == 0 or elevations[-1] - el < 100:
-                elevations.append(el)
+                if el > -500:
+                    elevations.append(el)
+                else:
+                    elevations.append(elevations[-1])
         return elevations
 
 

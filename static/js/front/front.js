@@ -99,7 +99,6 @@ define([
                 },
                 reset: true,
                 complete:function () {
-                    clearTimeout(timeout);
                     loadbutton.button('reset');
                     spinner.stop()
                 }
